@@ -4,6 +4,7 @@ import { Geist_Mono, Press_Start_2P, IBM_Plex_Mono } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
 import SocialLinks from "@/components/social-links"
+import RetroCursor from "@/components/retro-cursor"
 
 const pressStart2P = Press_Start_2P({
   weight: "400",
@@ -50,6 +51,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${_geistMono.className} ${pressStart2P.variable} ${ibmPlexMono.variable} font-mono antialiased bg-black text-white`}>
+        <RetroCursor />
         {children}
         <SocialLinks />
         <Analytics />
