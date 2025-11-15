@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import React from 'react'
+import { ProjectList } from './project-list'
 
 interface Project {
   id: number
@@ -100,40 +101,15 @@ export function ProjectModal({
               </div>
             )}
 
-            {/* Projects list view - Updated to cyan colors */}
+            {/* Projects list view - extracted to ProjectList to allow reuse inside terminal */}
             {isOpen && !isBooting && !selectedProject && (
-              <motion.div
-                className="bg-black p-6 h-96 overflow-y-auto space-y-3"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.3 }}
-              >
-                {projects.map((project, index) => (
-                  <motion.div
-                    key={project.id}
-                    onClick={() => {
-                      onSelectProject(project.id)
-                      setViewingLive(false)
-                    }}
-                    className="bg-black/50 border-2 border-white/50 hover:border-white p-4 rounded cursor-pointer transition-all hover:shadow-[0_0_20px_rgba(255,255,255,0.3)]"
-                    initial={{ x: -20, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    transition={{ delay: 0.4 + index * 0.1 }}
-                    whileHover={{ x: 5 }}
-                  >
-                    <div className="flex justify-between items-start">
-                      <div className="flex-1">
-                        <div className="text-white  font-bold mb-1">
-                          [{index + 1}] {project.name}
-                        </div>
-                        <div className="text-white text-xs mb-2">{project.description}</div>
-                        <div className="text-gray text-xs mb-2">→ {project.tech}</div>
-                      </div>
-                      <div className="text-white text-xs font-bold ml-2">{project.status}</div>
-                    </div>
-                  </motion.div>
-                ))}
-              </motion.div>
+              <ProjectList
+                projects={projects}
+                onSelectProject={(id) => {
+                  onSelectProject(id)
+                  setViewingLive(false)
+                }}
+              />
             )}
 
             {/* Live website preview in iframe - Updated to cyan colors */}
