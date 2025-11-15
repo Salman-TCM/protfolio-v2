@@ -28,7 +28,7 @@ const FloatingNavigation = ({ onNavigate }: FloatingNavigationProps) => {
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => setIsOpen(!isOpen)}
-        className="w-12 h-12 sm:w-14 sm:h-14 bg-black border-2 border-white flex items-center justify-center text-white hover:bg-white hover:text-black transition-all relative group"
+        className="w-12 h-12 sm:w-14 sm:h-14 bg-black flex items-center justify-center text-white hover:bg-white hover:text-black transition-all relative group"
         aria-label="Toggle navigation menu"
       >
         <motion.div
@@ -63,10 +63,10 @@ const FloatingNavigation = ({ onNavigate }: FloatingNavigationProps) => {
         </motion.div>
         
         {/* Corner accent lines */}
-        <div className="absolute top-0 left-0 w-2 h-2 border-t-2 border-l-2 border-white group-hover:border-black" />
-        <div className="absolute top-0 right-0 w-2 h-2 border-t-2 border-r-2 border-white group-hover:border-black" />
-        <div className="absolute bottom-0 left-0 w-2 h-2 border-b-2 border-l-2 border-white group-hover:border-black" />
-        <div className="absolute bottom-0 right-0 w-2 h-2 border-b-2 border-r-2 border-white group-hover:border-black" />
+        <div className="absolute top-0 left-0 w-2 h-2 border-t-2 border-l-2 border-white group-hover:border-black hidden" />
+        <div className="absolute top-0 right-0 w-2 h-2 border-t-2 border-r-2 border-white group-hover:border-black hidden" />
+        <div className="absolute bottom-0 left-0 w-2 h-2 border-b-2 border-l-2 border-white group-hover:border-black hidden" />
+        <div className="absolute bottom-0 right-0 w-2 h-2 border-b-2 border-r-2 border-white group-hover:border-black hidden" />
       </motion.button>
 
       {/* Navigation Menu - Responsive */}
