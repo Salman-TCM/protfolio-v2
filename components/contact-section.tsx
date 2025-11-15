@@ -67,9 +67,15 @@ export function ContactSection() {
       <div className="absolute -right-32 top-20 w-64 h-64 bg-white/20 rounded-full blur-3xl pointer-events-none" />
 
       <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} className="max-w-2xl w-full relative z-10">
-        <motion.div initial={{ opacity: 0, y: -20 }} whileInView={{ opacity: 1, y: 0 }} className="mb-12 text-center">
-          <h2 className="text-3xl md:text-5xl font-bold mb-4 text-white">{"> Get in Touch_"}</h2>
+        <motion.div initial={{ opacity: 0, y: -20 }} whileInView={{ opacity: 1, y: 0 }} className="mb-12 text-center" id="contact">
+          <h2 className="text-3xl md:text-5xl font-bold mb-2 text-white">{"> Get in Touch_"}</h2>
           <p className="text-white/60 font-mono text-sm">{"// Open channel: let's collaborate or just chat"}</p>
+
+          <div className="mt-4 flex gap-4 justify-center items-center">
+            <a href="tel:+8801521102041" className="text-white/80 text-sm font-mono">+880 1521102041</a>
+            <a href="mailto:salmann.hossain@gmail.com" className="text-white/80 text-sm font-mono">salmann.hossain@gmail.com</a>
+            <a href="/resume-Md_Salman_Hossain.pdf" download className="px-3 py-1 border border-white text-white text-sm font-mono hover:bg-white/5">Download Resume</a>
+          </div>
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -199,14 +205,14 @@ export function ContactSection() {
             <div className="mt-6 pt-6 border-t border-white/30 space-y-2">
               <p className="text-xs font-mono text-white mb-3">{"// or find me here"}</p>
               <div className="flex gap-4">
-                <a href="#" className="text-white hover:text-white transition-colors text-xs font-mono">
+                <a href="https://github.com/Salman-TCM" target="_blank" rel="noopener noreferrer" className="text-white hover:text-white transition-colors text-xs font-mono">
                   GitHub
                 </a>
-                <a href="#" className="text-white hover:text-white transition-colors text-xs font-mono">
-                  Twitter
-                </a>
-                <a href="#" className="text-white hover:text-white transition-colors text-xs font-mono">
+                <a href="https://linkedin.com/salman" target="_blank" rel="noopener noreferrer" className="text-white hover:text-white transition-colors text-xs font-mono">
                   LinkedIn
+                </a>
+                <a href="https://leetcode.com/SalmanTCM" target="_blank" rel="noopener noreferrer" className="text-white hover:text-white transition-colors text-xs font-mono">
+                  LeetCode
                 </a>
               </div>
             </div>

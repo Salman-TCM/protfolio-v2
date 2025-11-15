@@ -34,30 +34,63 @@ interface TerminalCommand {
 const PROJECTS = [
   {
     id: 1,
-    name: "Border Guard Bangladesh Recruitment",
-    url: "https://joinborderguard.bgb.gov.bd",
-    tech: "Next.js, React, Tailwind CSS",
-    description: "Official recruitment portal for Bangladesh Border Guard Force",
-    status: "LIVE",
-    fullDescription: "A comprehensive recruitment management system for the Bangladesh Border Guard organization, featuring online application submission, status tracking, and admin dashboard for managing applications and announcements.",
+    name: "bKash SIDA - AI Social Media Analytics",
+    url: "#",
+    tech: "Python, Transformers, Pandas, Scikit-learn, LangChain",
+    description: "NLP pipeline for multi-class topic classification and sentiment analysis for bKash social channels (Bengali).",
+    status: "ACTIVE",
+    fullDescription:
+      "Developed multi-class topic classification, NER and sentiment analysis pipeline using LLMs and classical ML to automate social media monitoring for Bangladesh's largest MFS provider.",
   },
   {
     id: 2,
-    name: "E-Commerce Platform",
-    url: "https://example-ecommerce.com",
-    tech: "Next.js, Stripe, PostgreSQL",
-    description: "Full-stack e-commerce solution with real-time inventory",
-    status: "LIVE",
-    fullDescription: "A modern e-commerce platform with real-time inventory management, secure payment processing with Stripe, user authentication, and a comprehensive admin dashboard.",
+    name: "CTTC Social Media Monitoring System",
+    url: "#",
+    tech: "Django, Elasticsearch, PostgreSQL, MinIO",
+    description: "High-performance data API and analytics platform for social media ingestion and search.",
+    status: "ACTIVE",
+    fullDescription:
+      "Architected a scalable API with Elasticsearch backend, advanced query optimization, caching, and MinIO-based distributed storage for enterprise analytics.",
   },
   {
     id: 3,
-    name: "AI Content Generator",
-    url: "https://example-ai.com",
-    tech: "React, OpenAI API, Vercel",
-    description: "Generate marketing copy with AI assistance",
-    status: "IN DEVELOPMENT",
-    fullDescription: "An intelligent content generation tool powered by OpenAI, helping businesses create compelling marketing copy, social media content, and product descriptions.",
+    name: "Vault Alarm & Monitoring — Jamuna Bank",
+    url: "#",
+    tech: "DSC DLS, Sur-Gard, Kronos, IoT",
+    description: "IoT-enabled vault alarm and monitoring deployed across bank branches.",
+    status: "DEPLOYED",
+    fullDescription:
+      "Led deployment of alarm & monitoring systems across 35+ branches with DSC programming, Sur-Gard integration, and centralized monitoring automation.",
+  },
+  {
+    id: 4,
+    name: "BGB E-Recruitment Platform",
+    url: "https://joinborderguard.bgb.gov.bd",
+    tech: "Django, React, MySQL, Docker",
+    description: "Enterprise recruitment platform with secure payments, 2FA and RBAC.",
+    status: "LIVE",
+    fullDescription:
+      "Built secure recruitment workflows, payment integration, 2FA, and containerized deployments for Border Guard Bangladesh's recruitment portal.",
+  },
+  {
+    id: 5,
+    name: "AV Automation — Huawei / Unilever",
+    url: "#",
+    tech: "Crestron SIMPL, Dante, Xilica",
+    description: "Enterprise AV automation, audio-over-IP and DSP integrations for corporate clients.",
+    status: "COMPLETED",
+    fullDescription:
+      "Designed low-latency AV switching and configured Dante networks, Crestron automation, and DSPs for high-quality corporate conference systems.",
+  },
+  {
+    id: 6,
+    name: "ZKTeco Access Control",
+    url: "#",
+    tech: "ZKTeco, PostgreSQL, RBAC, Biometric",
+    description: "Biometric access control system with real-time logging and RBAC.",
+    status: "COMPLETED",
+    fullDescription:
+      "Implemented enterprise-grade access control with biometric integration, optimized PostgreSQL schemas, and audit logging.",
   },
 ]
 
@@ -107,7 +140,8 @@ export function TerminalInterface() {
           </motion.div>
         </div>
       ),
-      timestamp: new Date().toLocaleTimeString(),
+      // leave timestamp empty on initial server render to avoid SSR/client hydration mismatch
+      timestamp: "",
     },
   ])
   const [input, setInput] = useState("")
@@ -168,58 +202,76 @@ Fun commands:
 │        ABOUT ME - PROFILE             │
 └──────────────────────────────────────┘
 
-Name: Salman Hossain
-Role: Full Stack Developer
-Experience: 5+ years
+Name: Md. Salman Hossain
+Role: Software Engineer
+Experience: 3+ years
 
 Bio:
-Passionate developer with expertise in modern web technologies.
-Specialized in building scalable applications with React, Next.js, and Node.js.
-
-Currently working on innovative projects combining AI and web development.
-Always learning and exploring new technologies.
+Software Engineer at Technometrics Ltd with expertise in AI/ML, NLP, and full-stack development.
+Specialized in building scalable web scraping solutions, RESTful APIs, and advanced NLP classification systems.
+Experienced in Python, Django, FastAPI, React, and modern cloud technologies.
 
 Education:
-• Computer Science Degree
-• Self-taught in modern frameworks
-• Active open-source contributor
+• Bachelor of Science in Computer Science
+• East West University, Dhaka, Bangladesh (Feb 2023)
 
-Contact: hello@example.com
-Portfolio: github.com/salmanhossain
+Contact: +880 1521102041 | salmann.hossain@gmail.com
+Portfolio: linkedin.com/salman | github.com/Salman-TCM | leetcode.com/SalmanTCM
       `,
     },
-    projects: {
-      title: "PROJECTS",
-      content: `
+  projects: {
+    title: "PROJECTS",
+    content: `
 ┌──────────────────────────────────────┐
 │         FEATURED PROJECTS             │
 └──────────────────────────────────────┘
 
-[1] Border Guard Bangladesh Recruitment
-    Tech: Next.js, React, Tailwind CSS
-    Official recruitment portal for Bangladesh Border Guard Force
-    Status: ✓ LIVE
-    Link: joinborderguard.bgb.gov.bd
-    Command: view 1
+[1] bKash SIDA - AI Social Media Analytics
+  Tech: Python, Transformers, Pandas, Scikit-learn, LangChain
+  NLP pipeline for multi-class topic classification, NER and sentiment analysis (Bengali)
+  Status: ACTIVE
+  Link: #
+  Command: view 1
 
-[2] E-Commerce Platform
-    Tech: Next.js, Stripe, PostgreSQL
-    A full-stack e-commerce solution with real-time inventory
-    Status: ✓ LIVE
-    Link: example-ecommerce.com
-    Command: view 2
+[2] CTTC Social Media Monitoring System
+  Tech: Django, Elasticsearch, PostgreSQL, MinIO
+  High-performance data API and analytics platform for social media monitoring
+  Status: ACTIVE
+  Link: #
+  Command: view 2
 
-[3] AI Content Generator
-    Tech: React, OpenAI API, Vercel
-    Generate marketing copy with AI assistance
-    Status: IN DEVELOPMENT
-    Link: example-ai.com
-    Command: view 3
+[3] Vault Alarm & Monitoring — Jamuna Bank
+  Tech: DSC DLS, Sur-Gard, Kronos, IoT
+  IoT-enabled vault alarm and centralized monitoring across 35+ branches
+  Status: DEPLOYED
+  Link: #
+  Command: view 3
+
+[4] BGB E-Recruitment Platform
+  Tech: Django, React, MySQL, Docker
+  Secure recruitment portal with 2FA, payments and RBAC (Border Guard Bangladesh)
+  Status: LIVE
+  Link: https://joinborderguard.bgb.gov.bd
+  Command: view 4
+
+[5] AV Automation — Huawei / Unilever
+  Tech: Crestron SIMPL, Dante, Xilica
+  Enterprise AV automation and DSP integration for corporate facilities
+  Status: COMPLETED
+  Link: #
+  Command: view 5
+
+[6] ZKTeco Access Control
+  Tech: ZKTeco, PostgreSQL, RBAC, Biometric
+  Biometric access control with real-time logging and audit trails
+  Status: COMPLETED
+  Link: #
+  Command: view 6
 
 Type "view [number]" to open project in preview
 Type "back" to return to projects list
-      `,
-    },
+    `,
+  },
     blog: {
       title: "BLOG",
       content: `
@@ -258,29 +310,32 @@ Type "blog list" for all posts
 │        TECHNICAL SKILLS               │
 └──────────────────────────────────────┘
 
-Frontend:
-  ██████████████████░░ 95% | React, Next.js, Vue.js
-  ██████████████████░░ 90% | TypeScript, JavaScript
-  █████████████░░░░░░ 85% | Tailwind CSS, SASS
-  █████████████░░░░░░ 80% | Animation, UI/UX
+Languages:
+  • Python | JavaScript | SQL | Bash | HTML/CSS
 
-Backend:
-  ██████████████████░░ 92% | Node.js, Express
-  █████████████░░░░░░ 85% | Python, FastAPI
-  ██████████████░░░░░░ 88% | SQL, NoSQL Databases
-  █████████░░░░░░░░░░ 75% | API Design, REST
+Frameworks & Libraries:
+  • FastAPI | Django | Laravel | React | React Native | LangChain
 
-Tools & DevOps:
-  ██████████████░░░░░░ 85% | Git, GitHub
-  █████████████░░░░░░░ 80% | Docker, Docker Compose
-  ██████████░░░░░░░░░░ 75% | CI/CD, GitHub Actions
-  █████████░░░░░░░░░░░ 70% | AWS, Vercel
+Machine Learning & NLP:
+  • Transformers (Hugging Face) | TensorFlow | spaCy | NLTK | LLM integration | Sentiment Analysis | NER
+
+Databases & Storage:
+  • MongoDB | MySQL | PostgreSQL | MinIO
+
+Search & Indexing:
+  • Elasticsearch | Monstache
+
+Task Queue & Caching:
+  • Celery | Redis
+
+DevOps & Tools:
+  • Docker | Kubernetes | Git | GitHub Actions | NGINX | CI/CD
+
+Cloud & Platforms:
+  • AWS (EC2, S3, IAM) | DigitalOcean
 
 Soft Skills:
-  • Problem Solving
-  • Team Leadership
-  • Mentoring
-  • Technical Writing
+  • Problem Solving | Team Collaboration | Technical Documentation
       `,
     },
     contact: {
@@ -290,15 +345,14 @@ Soft Skills:
 │         CONTACT INFORMATION           │
 └──────────────────────────────────────┘
 
-Email: hello@example.com
-Phone: +1 (555) 123-4567
-Location: San Francisco, CA
+Email: salmann.hossain@gmail.com
+Phone: +880 1521102041
+Location: Dhaka, Bangladesh
 
 Social Links:
-  • GitHub: github.com/salmanhossain
-  • LinkedIn: linkedin.com/in/salmanhossain
-  • Twitter: @salmanhossain
-  • Portfolio: salmanhossain.com
+  • GitHub: github.com/Salman-TCM
+  • LinkedIn: linkedin.com/salman
+  • LeetCode: leetcode.com/SalmanTCM
 
 Available for:
   ✓ Freelance Projects
