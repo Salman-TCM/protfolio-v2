@@ -11,35 +11,62 @@ const FloatingNavigation = ({ onNavigate }: FloatingNavigationProps) => {
   const [isOpen, setIsOpen] = useState(false)
 
   const navItems = [
-    { label: 'About', command: 'about', icon: '[i]', color: 'white' },
-    { label: 'Projects', command: 'projects', icon: '[▣]', color: 'white' },
-    { label: 'Skills', command: 'skills', icon: '[♦]', color: 'gray' },
-    { label: 'Contact', command: 'contact', icon: '[@]', color: 'white' },
-    { label: 'Download CV', command: 'cv', icon: '[↓]', color: 'gray' },
-    { label: 'AI Chat', command: 'ai', icon: '[◊]', color: 'gray' },
-    { label: 'Help', command: 'help', icon: '[?]', color: 'white' },
-    { label: 'Sound', command: 'sound', icon: '[♪]', color: 'white' },
+    { label: 'About', command: 'about', icon: '◉', color: 'white' },
+    { label: 'Projects', command: 'projects', icon: '▦', color: 'white' },
+    { label: 'Skills', command: 'skills', icon: '◆', color: 'gray' },
+    { label: 'Contact', command: 'contact', icon: '✉', color: 'white' },
+    { label: 'Download CV', command: 'cv', icon: '⬇', color: 'gray' },
+    { label: 'AI Chat', command: 'ai', icon: '⟟', color: 'gray' },
+    { label: 'Help', command: 'help', icon: '?', color: 'white' },
+    { label: 'Sound', command: 'sound', icon: '♫', color: 'white' },
   ]
 
   return (
     <div className="fixed top-4 sm:top-6 right-4 sm:right-6 z-50 nav-top-right">
-      {/* Main Toggle Button - Enhanced */}
+      {/* Main Toggle Button - Improved Design */}
       <motion.button
-        whileHover={{ scale: 1.1, boxShadow: '0 0 20px rgba(255, 255, 255, 0.6)' }}
-        whileTap={{ scale: 0.9 }}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
         onClick={() => setIsOpen(!isOpen)}
-        className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-black/80 border-1 border-white rounded-full flex items-center justify-center text-white hover:bg-white/10 transition-all backdrop-blur-sm relative overflow-hidden"
-        style={{ boxShadow: '0 0 10px rgba(255, 255, 255, 0.3)' }}
+        className="w-12 h-12 sm:w-14 sm:h-14 bg-black border-2 border-white flex items-center justify-center text-white hover:bg-white hover:text-black transition-all relative group"
+        aria-label="Toggle navigation menu"
       >
-        <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent" />
         <motion.div
-          animate={{ rotate: isOpen ? 45 : 0 }}
-          transition={{ duration: 0.3 }}
-          className="text-lg sm:text-xl md:text-2xl font-bold z-10"
-          style={{ textShadow: '0 0 10px currentColor' }}
+          className="flex flex-col gap-1 w-5 h-5 justify-center items-center"
+          animate={{ rotate: isOpen ? 180 : 0 }}
+          transition={{ duration: 0.3, type: "spring", stiffness: 200 }}
         >
-          {isOpen ? '✕' : '≡'}
+          <motion.span 
+            className="w-5 h-0.5 bg-current transition-all origin-center"
+            animate={{ 
+              rotate: isOpen ? 45 : 0,
+              y: isOpen ? 2.5 : 0
+            }}
+            transition={{ duration: 0.3 }}
+          />
+          <motion.span 
+            className="w-5 h-0.5 bg-current transition-all"
+            animate={{ 
+              opacity: isOpen ? 0 : 1,
+              x: isOpen ? -20 : 0
+            }}
+            transition={{ duration: 0.2 }}
+          />
+          <motion.span 
+            className="w-5 h-0.5 bg-current transition-all origin-center"
+            animate={{ 
+              rotate: isOpen ? -45 : 0,
+              y: isOpen ? -2.5 : 0
+            }}
+            transition={{ duration: 0.3 }}
+          />
         </motion.div>
+        
+        {/* Corner accent lines */}
+        <div className="absolute top-0 left-0 w-2 h-2 border-t-2 border-l-2 border-white group-hover:border-black" />
+        <div className="absolute top-0 right-0 w-2 h-2 border-t-2 border-r-2 border-white group-hover:border-black" />
+        <div className="absolute bottom-0 left-0 w-2 h-2 border-b-2 border-l-2 border-white group-hover:border-black" />
+        <div className="absolute bottom-0 right-0 w-2 h-2 border-b-2 border-r-2 border-white group-hover:border-black" />
       </motion.button>
 
       {/* Navigation Menu - Responsive */}
@@ -66,7 +93,7 @@ const FloatingNavigation = ({ onNavigate }: FloatingNavigationProps) => {
                     onNavigate(item.command)
                     setIsOpen(false)
                   }}
-                  className={`w-full flex items-center space-x-2 sm:space-x-3 p-2 sm:p-3 rounded border border-${item.color}/30 text-${item.color} hover:bg-${item.color}/10 transition-all font-mono text-xs sm:text-sm`}
+                  className={`w-full flex items-center space-x-2 sm:space-x-3 p-2 sm:p-3 border border-white/20 text-white hover:bg-white hover:text-black transition-all font-mono text-xs sm:text-sm group`}
                 >
                   <span className="text-sm sm:text-lg">{item.icon}</span>
                   <span className="flex-1 text-left">{item.label}</span>
