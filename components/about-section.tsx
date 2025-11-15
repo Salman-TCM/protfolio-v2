@@ -35,9 +35,11 @@ export function AboutSection() {
             <div>
               <h2 className="text-2xl md:text-4xl font-bold mb-4 text-white">{"> About Me_"}</h2>
               <p className="text-white/80 font-mono text-sm md:text-base leading-relaxed">
-                Software engineer passionate about automation, AI integration, and building elegant solutions.
-                Experienced in full-stack development with modern tech stacks. Always exploring new technologies and
-                pushing the boundaries of web development.
+                Software Engineer with hands-on experience designing scalable data pipelines, NLP systems, and
+                full-stack web applications. At Technometrics Ltd I build web-scraping platforms, REST APIs, and
+                production NLP pipelines using Python, FastAPI, Django and modern ML tooling. I focus on reliable
+                engineering, security (JWT, RBAC, 2FA), and scalable architectures (Docker, Kubernetes, cloud). Recently
+                led an AI-powered social media analytics project for bKash achieving strong classification accuracy.
               </p>
             </div>
 
@@ -46,36 +48,36 @@ export function AboutSection() {
                 whileHover={{ scale: 1.05 }}
                 className="border border-white/50 p-4 hover:border-white hover:shadow-lg transition-all border-white/30"
               >
-                <p className="text-white/60 text-xs mb-2 font-mono">SKILL_CATEGORY</p>
-                <p className="text-white text-sm font-bold">Frontend</p>
-                <p className="text-white/60 text-xs mt-1 font-mono">React | Next.js | TypeScript</p>
+                <p className="text-white/60 text-xs mb-2 font-mono">LANGUAGES</p>
+                <p className="text-white text-sm font-bold">Languages</p>
+                <p className="text-white/60 text-xs mt-1 font-mono">Python | JavaScript | SQL | Bash | HTML/CSS</p>
               </motion.div>
 
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 className="border border-gray/50 p-4 hover:border-gray hover:shadow-lg transition-all"
               >
-                <p className="text-gray/60 text-xs mb-2 font-mono">SKILL_CATEGORY</p>
-                <p className="text-gray text-sm font-bold">Backend</p>
-                <p className="text-gray/60 text-xs mt-1 font-mono">Node.js | MongoDB | APIs</p>
+                <p className="text-gray/60 text-xs mb-2 font-mono">FRAMEWORKS</p>
+                <p className="text-gray text-sm font-bold">Backend & APIs</p>
+                <p className="text-gray/60 text-xs mt-1 font-mono">Django | FastAPI | Laravel | Flask</p>
               </motion.div>
 
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 className="border border-white/50 p-4 hover:border-white transition-all border-white/30"
               >
-                <p className="text-white/60 text-xs mb-2 font-mono">SKILL_CATEGORY</p>
-                <p className="text-white text-sm font-bold">Tools</p>
-                <p className="text-white/60 text-xs mt-1 font-mono">Git | Docker | Linux</p>
+                <p className="text-white/60 text-xs mb-2 font-mono">TOOLS</p>
+                <p className="text-white text-sm font-bold">DevOps & Tools</p>
+                <p className="text-white/60 text-xs mt-1 font-mono">Docker | Kubernetes | Git | GitHub Actions | NGINX</p>
               </motion.div>
 
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 className="border border-white/50 p-4 hover:border-white transition-all"
               >
-                <p className="text-white/60 text-xs mb-2 font-mono">EXPERTISE_AREA</p>
-                <p className="text-white text-sm font-bold">AI & Automation</p>
-                <p className="text-white/60 text-xs mt-1 font-mono">LLMs | Workflows | Bots</p>
+                <p className="text-white/60 text-xs mb-2 font-mono">EXPERTISE</p>
+                <p className="text-white text-sm font-bold">AI & NLP</p>
+                <p className="text-white/60 text-xs mt-1 font-mono">LLMs | Transformers | NER | Sentiment Analysis | TensorFlow</p>
               </motion.div>
             </div>
           </motion.div>

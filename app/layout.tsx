@@ -19,9 +19,9 @@ const ibmPlexMono = IBM_Plex_Mono({
 const _geistMono = Geist_Mono({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Salman Hossain",
-  description: "Full-stack developer portfolio with retro synthwave aesthetic",
-  generator: "Salman Hossain",
+  title: "Md. Salman Hossain — Software Engineer (AI & NLP)",
+  description: "Md. Salman Hossain — Software Engineer specializing in AI/NLP, web scraping, and full-stack systems.",
+  generator: "Md. Salman Hossain",
   // icons: {
   //   icon: [
   //     {

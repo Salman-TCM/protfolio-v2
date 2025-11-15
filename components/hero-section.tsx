@@ -5,8 +5,8 @@ import { motion } from "framer-motion"
 
 export function HeroSection() {
   const [displayText, setDisplayText] = useState("")
-  const fullText = "> Hello, I'm Salman Hossain_"
-  const subText = "> Software Engineer | Automation & AI Enthusiast"
+  const fullText = "> Hello, I'm Md. Salman Hossain_"
+  const subText = "> Software Engineer | AI & NLP Specialist | Full Stack Developer"
 
   useEffect(() => {
     let index = 0
@@ -89,12 +89,20 @@ export function HeroSection() {
           transition={{ delay: 5.5 }}
           className="flex gap-4 justify-center flex-wrap"
         >
-          <button className="px-6 py-2 border-2 border-white text-white hover:bg-white/10 hover:shadow-lg transition-all border-white font-mono">
-            {"> EXPLORE"}
-          </button>
-          <button className="px-6 py-2 border-2 border-white text-white hover:bg-white/10 transition-all border-white font-mono">
+          <a
+            href="/resume-Md_Salman_Hossain.pdf"
+            download
+            className="px-6 py-2 border-2 border-white text-white hover:bg-white/10 hover:shadow-lg transition-all border-white font-mono inline-block text-center"
+          >
+            {"> DOWNLOAD RESUME"}
+          </a>
+
+          <a
+            href="#contact"
+            className="px-6 py-2 border-2 border-white text-white hover:bg-white/10 transition-all border-white font-mono inline-block text-center"
+          >
             {"> CONTACT"}
-          </button>
+          </a>
         </motion.div>
       </motion.div>
     </section>
