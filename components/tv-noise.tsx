@@ -11,7 +11,7 @@ interface TVNoiseProps {
 
 export function TVNoise({ isVisible, onComplete, duration = 2000 }: TVNoiseProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const animationFrameRef = useRef<number>()
+  const animationFrameRef = useRef<number | null>(null)
   const [showScanlines, setShowScanlines] = useState(false)
 
   useEffect(() => {
@@ -96,100 +96,78 @@ export function TVNoise({ isVisible, onComplete, duration = 2000 }: TVNoiseProps
   return (
     <AnimatePresence>
       <motion.div
-        className="fixed inset-0 z-50 bg-black flex items-center justify-center"
+        // Render noise as an absolutely positioned layer that fills the parent (terminal) container
+        className="absolute inset-0 z-20 pointer-events-none"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        transition={{ duration: 0.3 }}
+        transition={{ duration: 0.2 }}
       >
-        {/* TV Frame */}
-        <div className="relative w-[90vw] h-[80vh] max-w-4xl bg-gray-800 p-8 rounded-lg">
-          {/* Screen */}
-          <div className="relative w-full h-full bg-black rounded overflow-hidden">
-            {/* Noise Canvas */}
-            <canvas
-              ref={canvasRef}
-              className={`absolute inset-0 w-full h-full transition-opacity duration-500 ${
-                showScanlines ? 'opacity-20' : 'opacity-100'
-              }`}
-              style={{ imageRendering: 'pixelated' }}
-            />
-            
-            {/* Scanlines */}
-            <div 
-              className={`absolute inset-0 transition-opacity duration-500 ${
-                showScanlines ? 'opacity-100' : 'opacity-0'
-              }`}
-              style={{
-                background: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.03) 2px, rgba(255,255,255,0.03) 4px)'
-              }}
-            />
-            
-            {/* Loading Text */}
-            <motion.div
-              className="absolute inset-0 flex items-center justify-center"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: showScanlines ? 1 : 0 }}
-              transition={{ delay: 0.2 }}
-            >
-              <div className="text-center">
-                <div className="text-white font-mono text-xl mb-4">LOADING PROJECT...</div>
-                <div className="flex gap-1">
-                  {[...Array(8)].map((_, i) => (
-                    <motion.div
-                      key={i}
-                      className="w-2 h-2 bg-white"
-                      animate={{ opacity: [0.3, 1, 0.3] }}
-                      transition={{
-                        duration: 1,
-                        repeat: Infinity,
-                        delay: i * 0.1
-                      }}
-                    />
-                  ))}
-                </div>
-              </div>
-            </motion.div>
-            
-            {/* Screen Glow */}
-            <div 
-              className="absolute inset-0 pointer-events-none"
-              style={{
-                boxShadow: 'inset 0 0 100px rgba(255,255,255,0.1)'
-              }}
-            />
-          </div>
-          
-          {/* TV Controls */}
-          <div className="absolute right-4 top-1/2 transform -translate-y-1/2 space-y-2">
-            {[...Array(3)].map((_, i) => (
-              <div key={i} className="w-3 h-3 bg-gray-600 rounded-full" />
-            ))}
-          </div>
-        </div>
-        
-        {/* Static Audio Visualization */}
-        <motion.div
-          className="fixed bottom-8 left-8 text-white font-mono text-xs space-y-1"
-        >
+        {/* Screen (fill entire parent) */}
+        <div className="absolute inset-0 bg-transparent overflow-hidden">
+          {/* Noise Canvas */}
+          <canvas
+            ref={canvasRef}
+            className={`absolute inset-0 w-full h-full transition-opacity duration-500 ${
+              showScanlines ? 'opacity-20' : 'opacity-100'
+            }`}
+            style={{ imageRendering: 'pixelated' }}
+          />
+
+          {/* Scanlines overlay */}
+          <div
+            className={`absolute inset-0 transition-opacity duration-500 ${
+              showScanlines ? 'opacity-100' : 'opacity-0'
+            }`}
+            style={{
+              background: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.03) 2px, rgba(255,255,255,0.03) 4px)'
+            }}
+          />
+
+          {/* Loading Text (centered) */}
           <motion.div
-            animate={{ opacity: [0.3, 0.7, 0.3] }}
-            transition={{ duration: 0.8, repeat: Infinity }}
+            className="absolute inset-0 flex items-center justify-center pointer-events-none"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: showScanlines ? 1 : 0 }}
+            transition={{ delay: 0.2 }}
           >
+            <div className="text-center">
+              <div className="text-white font-mono text-xl mb-4">LOADING PROJECT...</div>
+              <div className="flex gap-1 justify-center">
+                {[...Array(8)].map((_, i) => (
+                  <motion.div
+                    key={i}
+                    className="w-2 h-2 bg-white"
+                    animate={{ opacity: [0.3, 1, 0.3] }}
+                    transition={{
+                      duration: 1,
+                      repeat: Infinity,
+                      delay: i * 0.1
+                    }}
+                  />
+                ))}
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Screen Glow */}
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              boxShadow: 'inset 0 0 100px rgba(255,255,255,0.06)'
+            }}
+          />
+        </div>
+
+        {/* Static Audio Visualization (inside terminal) */}
+        <motion.div className="absolute bottom-4 left-4 text-white font-mono text-xs space-y-1 pointer-events-none">
+          <motion.div animate={{ opacity: [0.3, 0.7, 0.3] }} transition={{ duration: 0.8, repeat: Infinity }}>
             [SIGNAL DETECTED] TUNING FREQUENCY...
           </motion.div>
-          <motion.div
-            className="opacity-60"
-            animate={{ opacity: [0.2, 0.6, 0.2] }}
-            transition={{ duration: 1.2, repeat: Infinity, delay: 0.3 }}
-          >
+          <motion.div className="opacity-60" animate={{ opacity: [0.2, 0.6, 0.2] }} transition={{ duration: 1.2, repeat: Infinity, delay: 0.3 }}>
             FREQ: 477.25MHz | SNR: -12dB
           </motion.div>
-          <motion.div
-            className="opacity-40"
-            animate={{ opacity: [0.1, 0.5, 0.1] }}
-            transition={{ duration: 0.6, repeat: Infinity, delay: 0.6 }}
-          >
+          <motion.div className="opacity-40" animate={{ opacity: [0.1, 0.5, 0.1] }} transition={{ duration: 0.6, repeat: Infinity, delay: 0.6 }}>
             SEARCHING FOR CLEAN SIGNAL...
           </motion.div>
         </motion.div>
@@ -201,7 +179,7 @@ export function TVNoise({ isVisible, onComplete, duration = 2000 }: TVNoiseProps
 // Matrix Rain Effect Component
 export function MatrixRain({ isVisible }: { isVisible: boolean }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const animationFrameRef = useRef<number>()
+  const animationFrameRef = useRef<number | null>(null)
 
   useEffect(() => {
     if (!isVisible) return

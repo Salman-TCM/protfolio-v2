@@ -23,6 +23,7 @@ import {
 
 import { useState, useEffect, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
+import { ProjectList } from './project-list'
 
 interface TerminalCommand {
   id: string
@@ -384,14 +385,97 @@ Send me an email or reach out on social media!
       output = contentData.about.content
       newSection = "about"
     } else if (trimmed === "projects") {
-      // Show TV static effect before opening projects
-      output = `$ Loading project database...`
-      setShowTVNoise(true)
+      // Trigger TV noise and show a loading line, then append the project list into the terminal
+  setShowTVNoise(true)
+  // Remove the initial welcome message (id: "0") so it is hidden when viewing projects
+  setCommands((prev) => prev.filter((c) => c.id !== "0"))
+  output = `$ Loading project database...`
+      // ensure modal is closed until users click a project in the terminal list
+      setProjectsModalOpen(false)
+      newSection = "projects"
+
+      // After a short delay remove noise and append the project list (modal-style) into terminal
       setTimeout(() => {
         setShowTVNoise(false)
-        setProjectsModalOpen(true)
-      }, 2500)
-      newSection = "projects"
+        const projectNode = (
+          <div>
+            <div className="text-white font-bold mb-2">{contentData.projects.title}</div>
+            <ProjectList
+              projects={PROJECTS}
+              onViewProject={(project) => {
+                setCommands([
+                  {
+                    id: Date.now().toString(),
+                    input: '',
+                    output: (
+                      <div className="bg-black p-6 space-y-4">
+                        <div>
+                          <div className="text-white text-2xl font-bold mb-2">{project.name ?? project.title}</div>
+                          <div className="text-white text-sm mb-4">{project.description}</div>
+                          <div className="text-gray text-xs mb-4">Tech: {project.tech}</div>
+                        </div>
+                        {project.url && (
+                          <button
+                            className="px-4 py-2 bg-white text-black font-bold font-mono text-sm border-2 border-white hover:bg-black hover:text-white transition"
+                            onClick={() => {
+                              setCommands((prev) => [
+                                ...prev,
+                                {
+                                  id: (Date.now() + 1).toString(),
+                                  input: '',
+                                  output: (
+                                    <div className="bg-black p-6 space-y-4">
+                                      <div className="text-white text-lg font-bold mb-4">{project.name ?? project.title} - Live Preview</div>
+                                      <iframe
+                                        src={project.url}
+                                        title={project.title}
+                                        className="w-full h-96 border border-white/20 rounded bg-white"
+                                        sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
+                                      />
+                                      <button
+                                        className="mt-4 px-4 py-2 bg-white text-black font-bold font-mono border-2 border-white hover:bg-black hover:text-white transition"
+                                        onClick={() => executeCommand('projects')}
+                                      >
+                                        Back to Projects
+                                      </button>
+                                    </div>
+                                  ),
+                                  timestamp: new Date().toLocaleTimeString(),
+                                },
+                              ])
+                            }}
+                          >
+                            View Live Preview
+                          </button>
+                        )}
+                        <button
+                          className="mt-6 px-4 py-2 bg-white text-black font-bold font-mono border-2 border-white hover:bg-black hover:text-white transition"
+                          onClick={() => executeCommand('projects')}
+                        >
+                          Back to Projects
+                        </button>
+                      </div>
+                    ),
+                    timestamp: new Date().toLocaleTimeString(),
+                  },
+                ]);
+              }}
+            />
+          </div>
+        )
+
+        setCommands([
+          {
+            id: Date.now().toString(),
+            input: "",
+            output: projectNode,
+            timestamp: new Date().toLocaleTimeString(),
+          },
+        ])
+
+        // update section state so header shows PROJECTS
+        setCurrentSection("projects")
+      }, 2000)
     } else if (trimmed === "blog") {
       output = contentData.blog.content
       newSection = "blog"
@@ -578,11 +662,7 @@ Made with ❤️ using Next.js and React`
         )}
       </AnimatePresence>
 
-      {/* TV Noise Effect */}
-      <TVNoise 
-        isVisible={showTVNoise} 
-        onComplete={() => setShowTVNoise(false)} 
-      />
+      {/* TV Noise Effect (rendered inside terminal frame below) */}
 
       {/* Matrix Rain Effect */}
       <MatrixRain isVisible={showMatrix} />
@@ -663,7 +743,10 @@ Made with ❤️ using Next.js and React`
             >
               {/* Scan lines overlay */}
               <TerminalScanLines intensity={0.015} />
-              
+
+              {/* TV Noise Effect rendered inside the terminal frame so the noise is clipped to the terminal */}
+              <TVNoise isVisible={showTVNoise} onComplete={() => setShowTVNoise(false)} />
+
               {/* Terminal Shadow Inset */}
               <div className="absolute inset-0 rounded-2xl shadow-[inset_0_0_100px_rgba(0,0,0,0.5)] pointer-events-none" />
           {/* Terminal Header */}
