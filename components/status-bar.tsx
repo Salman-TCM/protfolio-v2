@@ -65,29 +65,29 @@ export function StatusBar() {
 
   return (
     <motion.div 
-      className="fixed bottom-0 left-0 right-0 bg-black border-t border-white/20 px-4 py-1 font-mono text-xs z-40"
+      className="fixed bottom-0 left-0 right-0 bg-black border-t border-white/20 px-2 sm:px-3 md:px-4 py-1 sm:py-1.5 md:py-2 font-mono text-xs z-40"
       initial={{ y: 100 }}
       animate={{ y: 0 }}
       transition={{ type: "spring", stiffness: 300, damping: 30 }}
     >
       <div className="max-w-full flex items-center justify-between">
         {/* Left side - System Status */}
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 sm:gap-4">
+          <div className="flex items-center gap-1 sm:gap-2">
             <motion.div
-              className={`w-2 h-2 rounded-full ${networkStatus === 'online' ? 'bg-white' : 'bg-gray-500'}`}
+              className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full ${networkStatus === 'online' ? 'bg-white' : 'bg-gray-500'}`}
               animate={{ 
                 scale: networkStatus === 'online' ? [1, 1.2, 1] : 1,
                 opacity: networkStatus === 'online' ? 1 : 0.5
               }}
               transition={{ repeat: Infinity, duration: 2 }}
             />
-            <span className="text-white uppercase">{networkStatus}</span>
+            <span className="text-white uppercase text-xs sm:text-sm">{networkStatus}</span>
           </div>
           
-          <div className="hidden sm:flex items-center gap-2 text-gray-400">
-            <span>CMD:</span>
-            <span className="text-white">{commandCount}</span>
+          <div className="hidden xs:flex items-center gap-2 text-gray-400">
+            <span className="text-xs">CMD:</span>
+            <span className="text-white text-xs">{commandCount}</span>
           </div>
         </div>
 

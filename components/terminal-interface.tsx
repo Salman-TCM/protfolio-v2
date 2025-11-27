@@ -640,7 +640,7 @@ Made with ❤️ using Next.js and React`
   }
 
   return (
-    <div className="min-h-screen bg-black p-4 md:p-8 font-mono pb-24 relative">
+    <div className="min-h-screen bg-black p-2 sm:p-4 md:p-6 lg:p-8 font-mono pb-20 sm:pb-24 relative">
       {/* Background Grid */}
       <div 
         className="fixed inset-0 opacity-5"
@@ -674,21 +674,21 @@ Made with ❤️ using Next.js and React`
 
       <FloatingNavigation onNavigate={handleNavigate} />
 
-      {/* Quick Commands - Left Sidebar */}
+      {/* Quick Commands - Left Sidebar - Hidden on small mobile */}
       {terminalReady && (
         <motion.div
-          className="fixed left-4 top-1/2 transform -translate-y-1/2 z-30"
+          className="fixed left-2 sm:left-4 top-1/2 transform -translate-y-1/2 z-30 hidden sm:block"
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 1, duration: 0.5 }}
         >
-          <div className="bg-black/90 backdrop-blur-md p-4 rounded-lg border border-white/20">
-            <div className="flex flex-col gap-2">
-              <div className="text-white font-mono text-xs mb-2 opacity-60">QUICK CMD</div>
+          <div className="bg-black/90 backdrop-blur-md p-2 sm:p-4 rounded-lg border border-white/20">
+            <div className="flex flex-col gap-1 sm:gap-2">
+              <div className="text-white font-mono text-xs mb-1 sm:mb-2 opacity-60">QUICK CMD</div>
               {['about', 'projects', 'skills', 'contact', 'matrix', 'hack', 'neofetch', 'static'].map((cmd, index) => (
                 <motion.button
                   key={cmd}
-                  className="px-3 py-2 bg-white/5 text-gray-300 rounded font-mono text-xs hover:bg-white/10 hover:text-white transition-all text-left border border-white/10"
+                  className="px-2 py-1 sm:px-3 sm:py-2 bg-white/5 text-gray-300 rounded font-mono text-xs hover:bg-white/10 hover:text-white transition-all text-left border border-white/10"
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 1.2 + index * 0.05 }}
@@ -727,7 +727,7 @@ Made with ❤️ using Next.js and React`
       {terminalReady && (
         <ScrollReveal direction="up" delay={0.2}>
         <motion.div
-          className="max-w-6xl mx-auto px-4 relative z-10"
+          className="max-w-4xl sm:max-w-5xl md:max-w-6xl mx-auto px-2 sm:px-4 relative z-10"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
@@ -736,7 +736,7 @@ Made with ❤️ using Next.js and React`
         <CRTEffect>
           <TerminalWindowEffect>
             <motion.div 
-              className="bg-black border-2 border-white/20 rounded-2xl overflow-hidden shadow-[0_0_50px_rgba(255,255,255,0.1)] backdrop-blur-sm relative"
+              className="bg-black border border-white/20 sm:border-2 border-white/20 rounded-xl sm:rounded-2xl overflow-hidden shadow-[0_0_50px_rgba(255,255,255,0.1)] backdrop-blur-sm relative"
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
@@ -748,25 +748,26 @@ Made with ❤️ using Next.js and React`
               <TVNoise isVisible={showTVNoise} onComplete={() => setShowTVNoise(false)} />
 
               {/* Terminal Shadow Inset */}
-              <div className="absolute inset-0 rounded-2xl shadow-[inset_0_0_100px_rgba(0,0,0,0.5)] pointer-events-none" />
+              <div className="absolute inset-0 rounded-xl sm:rounded-2xl shadow-[inset_0_0_100px_rgba(0,0,0,0.5)] pointer-events-none" />
           {/* Terminal Header */}
           <motion.div 
-            className="bg-gradient-to-r from-white to-gray-100 text-black px-6 py-4 flex justify-between items-center border-b border-white/10"
+            className="bg-gradient-to-r from-white to-gray-100 text-black px-3 sm:px-4 md:px-6 py-2 sm:py-3 md:py-4 flex justify-between items-center border-b border-white/10"
             initial={{ y: -20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.3, duration: 0.5 }}
           >
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 sm:gap-3 md:gap-4">
               <motion.div 
-                className="font-bold font-mono text-lg tracking-wide"
+                className="font-bold font-mono text-sm sm:text-base md:text-lg tracking-wide"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.5 }}
               >
-                PORTFOLIO TERMINAL
+                <span className="hidden xs:inline">PORTFOLIO TERMINAL</span>
+                <span className="xs:hidden">TERMINAL</span>
               </motion.div>
               <motion.div
-                className="text-xs text-gray-600 font-mono"
+                className="text-xs text-gray-600 font-mono hidden sm:block"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.7 }}
@@ -787,12 +788,12 @@ Made with ❤️ using Next.js and React`
               }}
             />
             
-            <div className="p-4 md:p-8 space-y-4 md:space-y-6 h-[60vh] md:h-[70vh] overflow-y-auto custom-scrollbar relative z-10">
+            <div className="flex flex-col p-2 sm:p-3 md:p-4 lg:p-6 h-[70vh] sm:h-[75vh] md:h-[80vh] lg:h-[85vh] overflow-y-auto custom-scrollbar relative z-10">
             <AnimatePresence mode="wait">
               {commands.map((cmd, index) => (
                 <motion.div
                   key={cmd.id}
-                  className="space-y-3 p-4 rounded-lg bg-white/5 border border-white/10 backdrop-blur-sm"
+                  className="space-y-2 sm:space-y-3 p-2 sm:p-3 md:p-4 rounded-lg bg-white/5 border border-white/10 backdrop-blur-sm"
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: 20 }}
@@ -804,18 +805,18 @@ Made with ❤️ using Next.js and React`
                 >
                   {cmd.input && (
                     <motion.div 
-                      className="flex items-center gap-3 text-white border-b border-white/10 pb-2"
+                      className="flex items-center gap-2 sm:gap-3 text-white border-b border-white/10 pb-1 sm:pb-2"
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       transition={{ delay: 0.2 }}
                     >
-                      <span className="text-white text-lg">❯</span>
-                      <span className="font-mono text-sm">{cmd.input}</span>
-                      <span className="text-gray-400 text-xs ml-auto">{cmd.timestamp}</span>
+                      <span className="text-white text-sm sm:text-base lg:text-lg">❯</span>
+                      <span className="font-mono text-xs sm:text-sm flex-1 min-w-0 break-all">{cmd.input}</span>
+                      <span className="text-gray-400 text-xs ml-auto whitespace-nowrap">{cmd.timestamp}</span>
                     </motion.div>
                   )}
                   <motion.div 
-                    className="text-white whitespace-pre-wrap font-mono text-sm leading-relaxed pl-6"
+                    className="text-white whitespace-pre-wrap font-mono text-xs sm:text-sm leading-relaxed pl-4 sm:pl-6"
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.3, duration: 0.5 }}
@@ -831,23 +832,23 @@ Made with ❤️ using Next.js and React`
 
           {/* Terminal Input */}
           <motion.div 
-            className="border-t border-white/20 bg-gradient-to-r from-black/80 to-gray-900/80 px-8 py-6 backdrop-blur-sm"
+            className="border-t border-white/20 bg-gradient-to-r from-black/80 to-gray-900/80 px-3 sm:px-4 md:px-6 lg:px-8 py-3 sm:py-4 md:py-6 backdrop-blur-sm"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.8 }}
           >
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 sm:gap-3 md:gap-4">
               <motion.div
-                className="flex items-center gap-2 text-white"
+                className="flex items-center gap-1 sm:gap-2 text-white"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 1 }}
               >
-                <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
-                <span className="font-mono text-sm text-gray-400">visitor@portfolio</span>
-                <span className="text-gray-500">:</span>
-                <span className="text-blue-400 text-sm">~</span>
-                <span className="text-white text-lg ml-2">❯</span>
+                <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-white rounded-full animate-pulse" />
+                <span className="font-mono text-xs sm:text-sm text-gray-400 hidden xs:block">visitor@portfolio</span>
+                <span className="text-gray-500 text-xs">:</span>
+                <span className="text-blue-400 text-xs sm:text-sm">~</span>
+                <span className="text-white text-sm sm:text-base lg:text-lg ml-1 sm:ml-2">❯</span>
               </motion.div>
               
               <motion.input
@@ -856,7 +857,7 @@ Made with ❤️ using Next.js and React`
                 onChange={handleInputChange}
                 onKeyPress={handleKeyPress}
                 placeholder="Enter command..."
-                className="flex-1 bg-transparent outline-none text-white placeholder-gray-500 font-mono text-sm border-b border-transparent focus:border-white/30 transition-all duration-300 py-1"
+                className="flex-1 bg-transparent outline-none text-white placeholder-gray-500 font-mono text-xs sm:text-sm border-b border-transparent focus:border-white/30 transition-all duration-300 py-1"
                 autoFocus
                 initial={{ opacity: 0, width: 0 }}
                 animate={{ opacity: 1, width: "100%" }}
@@ -869,7 +870,7 @@ Made with ❤️ using Next.js and React`
                 animate={{ opacity: 1 }}
                 transition={{ delay: 1.4 }}
               >
-                <div className="w-1 bg-white animate-pulse h-4" />
+                <div className="w-0.5 sm:w-1 bg-white animate-pulse h-3 sm:h-4" />
               </motion.div>
             </div>
           </motion.div>
