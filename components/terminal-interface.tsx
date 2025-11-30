@@ -408,7 +408,7 @@ Send me an email or reach out on social media!
                     id: Date.now().toString(),
                     input: '',
                     output: (
-                      <div className="bg-black p-6 space-y-4">
+                      <div className="p-6 space-y-4">
                         <div>
                           <div className="text-white text-2xl font-bold mb-2">{project.name ?? project.title}</div>
                           <div className="text-white text-sm mb-4">{project.description}</div>
@@ -424,7 +424,7 @@ Send me an email or reach out on social media!
                                   id: (Date.now() + 1).toString(),
                                   input: '',
                                   output: (
-                                    <div className="bg-black p-6 space-y-4">
+                                    <div className="p-6 space-y-4">
                                       <div className="text-white text-lg font-bold mb-4">{project.name ?? project.title} - Live Preview</div>
                                       <iframe
                                         src={project.url}
@@ -788,12 +788,12 @@ Made with ❤️ using Next.js and React`
               }}
             />
             
-            <div className="flex flex-col p-2 sm:p-3 md:p-4 lg:p-6 h-[70vh] sm:h-[75vh] md:h-[80vh] lg:h-[85vh] overflow-y-auto custom-scrollbar relative z-10">
+            <div className="flex flex-col p-2 sm:p-3 md:p-4 lg:p-6 h-[75vh] sm:h-[75vh] md:h-[70vh] lg:h-[75vh] overflow-y-auto custom-scrollbar relative z-10">
             <AnimatePresence mode="wait">
               {commands.map((cmd, index) => (
                 <motion.div
                   key={cmd.id}
-                  className="space-y-2 sm:space-y-3 p-2 sm:p-3 md:p-4 rounded-lg bg-white/5 border border-white/10 backdrop-blur-sm"
+                  // className="space-y-2 sm:space-y-3 p-2 sm:p-3 md:p-4 rounded-lg bg-white/5 border border-white/10 backdrop-blur-sm"
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: 20 }}
