@@ -20,6 +20,7 @@ import {
   KeyboardSoundEffect, 
   BootSoundVisualizer 
 } from './terminal-sound-effects'
+import { AboutMeCard } from './about-me-card'
 
 import { useState, useEffect, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
@@ -673,6 +674,9 @@ Made with ❤️ using Next.js and React`
       <BootSoundVisualizer isActive={showBootSequence} />
 
       <FloatingNavigation onNavigate={handleNavigate} />
+
+      {/* About Me Card - Shows on terminal ready */}
+      {terminalReady && <AboutMeCard />}
 
       {/* Quick Commands - Left Sidebar - Hidden on small mobile */}
       {terminalReady && (
