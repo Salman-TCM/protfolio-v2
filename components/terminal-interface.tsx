@@ -20,6 +20,7 @@ import {
   KeyboardSoundEffect, 
   BootSoundVisualizer 
 } from './terminal-sound-effects'
+import { AboutMeCard } from './about-me-card'
 
 import { useState, useEffect, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
@@ -116,15 +117,10 @@ export function TerminalInterface() {
             animate={{ opacity: 1 }}
             transition={{ duration: 1, delay: 0.5 }}
           >
-            {/* {`████████╗███████╗██████╗ ███╗   ███╗██╗███╗   ██╗ █████╗ ██╗     
-╚══██╔══╝██╔════╝██╔══██╗████╗ ████║██║████╗  ██║██╔══██╗██║     
-   ██║   █████╗  ██████╔╝██╔████╔██║██║██╔██╗ ██║███████║██║     
-   ██║   ██╔══╝  ██╔══██╗██║╚██╔╝██║██║██║╚██╗██║██╔══██║██║     
-   ██║   ███████╗██║  ██║██║ ╚═╝ ██║██║██║ ╚████║██║  ██║╚══════╝
-   ╚═╝   ╚══════╝╚═╝  ╚═╝╚═╝     ╚═╝╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝╚══════╝`} */}
+            {/* Terminal ASCII Art */}
           </motion.div>
           <motion.div 
-            className="text-white font-bold"
+            className="text-white font-bold font-mono"
             initial={{ opacity: 0, x: -10 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 1.2, duration: 0.5 }}
@@ -132,7 +128,7 @@ export function TerminalInterface() {
             Welcome to My Portfolio
           </motion.div>
           <motion.div 
-            className="text-gray text-sm"
+            className="text-white/70 text-sm font-mono"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1.5, duration: 0.5 }}
@@ -674,6 +670,9 @@ Made with ❤️ using Next.js and React`
 
       <FloatingNavigation onNavigate={handleNavigate} />
 
+      {/* About Me Card - Shows on terminal ready */}
+      {terminalReady && <AboutMeCard />}
+
       {/* Quick Commands - Left Sidebar - Hidden on small mobile */}
       {terminalReady && (
         <motion.div
@@ -682,24 +681,24 @@ Made with ❤️ using Next.js and React`
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 1, duration: 0.5 }}
         >
-          <div className="bg-black/90 backdrop-blur-md p-2 sm:p-4 rounded-lg border border-white/20">
+          <div className="bg-black/95 backdrop-blur-md p-2 sm:p-4 border-2 border-white/50 shadow-[0_0_30px_rgba(255,255,255,0.2)]">
             <div className="flex flex-col gap-1 sm:gap-2">
-              <div className="text-white font-mono text-xs mb-1 sm:mb-2 opacity-60">QUICK CMD</div>
+              <div className="text-white font-mono text-xs mb-1 sm:mb-2">[QUICK.CMD]</div>
               {['about', 'projects', 'skills', 'contact', 'matrix', 'hack', 'neofetch', 'static'].map((cmd, index) => (
                 <motion.button
                   key={cmd}
-                  className="px-2 py-1 sm:px-3 sm:py-2 bg-white/5 text-gray-300 rounded font-mono text-xs hover:bg-white/10 hover:text-white transition-all text-left border border-white/10"
+                  className="px-2 py-1 sm:px-3 sm:py-2 bg-black text-white font-mono text-xs hover:bg-white/10 hover:text-white transition-all text-left border border-white/30"
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 1.2 + index * 0.05 }}
-                  whileHover={{ x: 2 }}
+                  whileHover={{ x: 2, boxShadow: "0 0 10px rgba(255,255,255,0.3)" }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => {
                     setInput(cmd)
                     executeCommand(cmd)
                   }}
                 >
-                  {cmd}
+                  $ {cmd}
                 </motion.button>
               ))}
             </div>
@@ -736,29 +735,42 @@ Made with ❤️ using Next.js and React`
         <CRTEffect>
           <TerminalWindowEffect>
             <motion.div 
-              className="bg-black border border-white/20 sm:border-2 border-white/20 rounded-xl sm:rounded-2xl overflow-hidden shadow-[0_0_50px_rgba(255,255,255,0.1)] backdrop-blur-sm relative"
+              className="bg-black border-2 border-white/50 rounded-xl overflow-hidden shadow-[0_0_50px_rgba(255,255,255,0.2)] backdrop-blur-sm relative"
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
             >
               {/* Scan lines overlay */}
               <TerminalScanLines intensity={0.015} />
+              
+              {/* Subtle Retro Scanlines */}
+              <div className="absolute inset-0 pointer-events-none opacity-10"
+                style={{
+                  background: `repeating-linear-gradient(
+                    0deg,
+                    rgba(255, 255, 255, 0.1) 0px,
+                    transparent 1px,
+                    transparent 2px,
+                    rgba(255, 255, 255, 0.1) 3px
+                  )`
+                }}
+              />
 
               {/* TV Noise Effect rendered inside the terminal frame so the noise is clipped to the terminal */}
               <TVNoise isVisible={showTVNoise} onComplete={() => setShowTVNoise(false)} />
 
               {/* Terminal Shadow Inset */}
-              <div className="absolute inset-0 rounded-xl sm:rounded-2xl shadow-[inset_0_0_100px_rgba(0,0,0,0.5)] pointer-events-none" />
+              <div className="absolute inset-0 shadow-[inset_0_0_100px_rgba(255,255,255,0.02)] pointer-events-none" />
           {/* Terminal Header */}
           <motion.div 
-            className="bg-gradient-to-r from-white to-gray-100 text-black px-3 sm:px-4 md:px-6 py-2 sm:py-3 md:py-4 flex justify-between items-center border-b border-white/10"
+            className="bg-white/10 border-b border-white/30 px-3 sm:px-4 md:px-6 py-2 sm:py-3 md:py-4 flex justify-between items-center"
             initial={{ y: -20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.3, duration: 0.5 }}
           >
             <div className="flex items-center gap-2 sm:gap-3 md:gap-4">
               <motion.div 
-                className="font-bold font-mono text-sm sm:text-base md:text-lg tracking-wide"
+                className="font-bold font-mono text-sm sm:text-base md:text-lg tracking-wide text-white"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.5 }}
@@ -767,7 +779,7 @@ Made with ❤️ using Next.js and React`
                 <span className="xs:hidden">TERMINAL</span>
               </motion.div>
               <motion.div
-                className="text-xs text-gray-600 font-mono hidden sm:block"
+                className="text-xs text-white/70 font-mono hidden sm:block"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.7 }}
