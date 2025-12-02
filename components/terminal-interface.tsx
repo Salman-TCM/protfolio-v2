@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-import { ProjectModal } from './project-modal'
 import FloatingNavigation from './floating-navigation'
 import { ScrollReveal } from './scroll-reveal'
 import { TVNoise, MatrixRain } from './tv-noise'
@@ -21,10 +20,10 @@ import {
   BootSoundVisualizer 
 } from './terminal-sound-effects'
 import { AboutMeCard } from './about-me-card'
+import { TerminalProjectsGallery } from './terminal-projects-gallery'
 
 import { useState, useEffect, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { ProjectList } from './project-list'
 
 interface TerminalCommand {
   id: string
@@ -33,68 +32,6 @@ interface TerminalCommand {
   timestamp: string
 }
 
-const PROJECTS = [
-  {
-    id: 1,
-    name: "bKash SIDA - AI Social Media Analytics",
-    url: "#",
-    tech: "Python, Transformers, Pandas, Scikit-learn, LangChain",
-    description: "NLP pipeline for multi-class topic classification and sentiment analysis for bKash social channels (Bengali).",
-    status: "ACTIVE",
-    fullDescription:
-      "Developed multi-class topic classification, NER and sentiment analysis pipeline using LLMs and classical ML to automate social media monitoring for Bangladesh's largest MFS provider.",
-  },
-  {
-    id: 2,
-    name: "CTTC Social Media Monitoring System",
-    url: "#",
-    tech: "Django, Elasticsearch, PostgreSQL, MinIO",
-    description: "High-performance data API and analytics platform for social media ingestion and search.",
-    status: "ACTIVE",
-    fullDescription:
-      "Architected a scalable API with Elasticsearch backend, advanced query optimization, caching, and MinIO-based distributed storage for enterprise analytics.",
-  },
-  {
-    id: 3,
-    name: "Vault Alarm & Monitoring — Jamuna Bank",
-    url: "#",
-    tech: "DSC DLS, Sur-Gard, Kronos, IoT",
-    description: "IoT-enabled vault alarm and monitoring deployed across bank branches.",
-    status: "DEPLOYED",
-    fullDescription:
-      "Led deployment of alarm & monitoring systems across 35+ branches with DSC programming, Sur-Gard integration, and centralized monitoring automation.",
-  },
-  {
-    id: 4,
-    name: "BGB E-Recruitment Platform",
-    url: "https://joinborderguard.bgb.gov.bd",
-    tech: "Django, React, MySQL, Docker",
-    description: "Enterprise recruitment platform with secure payments, 2FA and RBAC.",
-    status: "LIVE",
-    fullDescription:
-      "Built secure recruitment workflows, payment integration, 2FA, and containerized deployments for Border Guard Bangladesh's recruitment portal.",
-  },
-  {
-    id: 5,
-    name: "AV Automation — Huawei / Unilever",
-    url: "#",
-    tech: "Crestron SIMPL, Dante, Xilica",
-    description: "Enterprise AV automation, audio-over-IP and DSP integrations for corporate clients.",
-    status: "COMPLETED",
-    fullDescription:
-      "Designed low-latency AV switching and configured Dante networks, Crestron automation, and DSPs for high-quality corporate conference systems.",
-  },
-  {
-    id: 6,
-    name: "ZKTeco Access Control",
-    url: "#",
-    tech: "ZKTeco, PostgreSQL, RBAC, Biometric",
-    description: "Biometric access control system with real-time logging and RBAC.",
-    status: "COMPLETED",
-    fullDescription:
-      "Implemented enterprise-grade access control with biometric integration, optimized PostgreSQL schemas, and audit logging.",
-  },
-]
 
 export function TerminalInterface() {
   const [showBootSequence, setShowBootSequence] = useState(true)
@@ -143,8 +80,6 @@ export function TerminalInterface() {
   ])
   const [input, setInput] = useState("")
   const [currentSection, setCurrentSection] = useState("home")
-  const [projectsModalOpen, setProjectsModalOpen] = useState(false)
-  const [selectedProjectId, setSelectedProjectId] = useState<number | null>(null)
   const terminalEndRef = useRef<HTMLDivElement>(null)
 
   const handleNavigate = (command: string) => {
@@ -166,6 +101,7 @@ Location: ~/portfolio
 Available sections:
   • about      - Learn about me
   • projects   - View my projects
+  • gallery    - Open retro project viewer
   • blog       - Read blog posts
   • contact    - Get in touch
   • skills     - View my skills
@@ -189,6 +125,7 @@ Fun commands:
   • hack       - Start hacking sequence
   • glitch     - Glitch the system
   • static     - Generate TV static
+  • gallery    - Full-screen retro project viewer
   • cat readme - Read README file
       `,
     },
@@ -216,59 +153,21 @@ Contact: +880 1521102041 | salmann.hossain@gmail.com
 Portfolio: linkedin.com/salman | github.com/Salman-TCM | leetcode.com/SalmanTCM
       `,
     },
-  projects: {
-    title: "PROJECTS",
-    content: `
-┌──────────────────────────────────────┐
-│         FEATURED PROJECTS             │
-└──────────────────────────────────────┘
-
-[1] bKash SIDA - AI Social Media Analytics
-  Tech: Python, Transformers, Pandas, Scikit-learn, LangChain
-  NLP pipeline for multi-class topic classification, NER and sentiment analysis (Bengali)
-  Status: ACTIVE
-  Link: #
-  Command: view 1
-
-[2] CTTC Social Media Monitoring System
-  Tech: Django, Elasticsearch, PostgreSQL, MinIO
-  High-performance data API and analytics platform for social media monitoring
-  Status: ACTIVE
-  Link: #
-  Command: view 2
-
-[3] Vault Alarm & Monitoring — Jamuna Bank
-  Tech: DSC DLS, Sur-Gard, Kronos, IoT
-  IoT-enabled vault alarm and centralized monitoring across 35+ branches
-  Status: DEPLOYED
-  Link: #
-  Command: view 3
-
-[4] BGB E-Recruitment Platform
-  Tech: Django, React, MySQL, Docker
-  Secure recruitment portal with 2FA, payments and RBAC (Border Guard Bangladesh)
-  Status: LIVE
-  Link: https://joinborderguard.bgb.gov.bd
-  Command: view 4
-
-[5] AV Automation — Huawei / Unilever
-  Tech: Crestron SIMPL, Dante, Xilica
-  Enterprise AV automation and DSP integration for corporate facilities
-  Status: COMPLETED
-  Link: #
-  Command: view 5
-
-[6] ZKTeco Access Control
-  Tech: ZKTeco, PostgreSQL, RBAC, Biometric
-  Biometric access control with real-time logging and audit trails
-  Status: COMPLETED
-  Link: #
-  Command: view 6
-
-Type "view [number]" to open project in preview
-Type "back" to return to projects list
+    projects: {
+      title: "PROJECTS",
+      content: `Launching retro project viewer with full-screen gallery...
+      
+Use arrow keys or scroll to navigate between projects
+Press ESC or click [EXIT] to return to terminal
+      
+Features:
+• CRT scanlines and VHS glitch effects
+• Smooth media transitions
+• Touch/swipe support on mobile
+• Full-screen project galleries
+• Live site links for available projects
     `,
-  },
+    },
     blog: {
       title: "BLOG",
       content: `
@@ -381,97 +280,25 @@ Send me an email or reach out on social media!
       output = contentData.about.content
       newSection = "about"
     } else if (trimmed === "projects") {
-      // Trigger TV noise and show a loading line, then append the project list into the terminal
-  setShowTVNoise(true)
-  // Remove the initial welcome message (id: "0") so it is hidden when viewing projects
-  setCommands((prev) => prev.filter((c) => c.id !== "0"))
-  output = `$ Loading project database...`
-      // ensure modal is closed until users click a project in the terminal list
-      setProjectsModalOpen(false)
-      newSection = "projects"
-
-      // After a short delay remove noise and append the project list (modal-style) into terminal
+      // Show project gallery inside terminal
+      setShowTVNoise(true)
+      setCommands(prev => prev.filter(c => c.id !== "0")) // Remove welcome message
+      output = `$ Loading projects gallery...`
+      
       setTimeout(() => {
         setShowTVNoise(false)
-        const projectNode = (
-          <div>
-            <div className="text-white font-bold mb-2">{contentData.projects.title}</div>
-            <ProjectList
-              projects={PROJECTS}
-              onViewProject={(project) => {
-                setCommands([
-                  {
-                    id: Date.now().toString(),
-                    input: '',
-                    output: (
-                      <div className="p-6 space-y-4">
-                        <div>
-                          <div className="text-white text-2xl font-bold mb-2">{project.name ?? project.title}</div>
-                          <div className="text-white text-sm mb-4">{project.description}</div>
-                          <div className="text-gray text-xs mb-4">Tech: {project.tech}</div>
-                        </div>
-                        {project.url && (
-                          <button
-                            className="px-4 py-2 bg-white text-black font-bold font-mono text-sm border-2 border-white hover:bg-black hover:text-white transition"
-                            onClick={() => {
-                              setCommands((prev) => [
-                                ...prev,
-                                {
-                                  id: (Date.now() + 1).toString(),
-                                  input: '',
-                                  output: (
-                                    <div className="p-6 space-y-4">
-                                      <div className="text-white text-lg font-bold mb-4">{project.name ?? project.title} - Live Preview</div>
-                                      <iframe
-                                        src={project.url}
-                                        title={project.title}
-                                        className="w-full h-96 border border-white/20 rounded bg-white"
-                                        sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
-                                      />
-                                      <button
-                                        className="mt-4 px-4 py-2 bg-white text-black font-bold font-mono border-2 border-white hover:bg-black hover:text-white transition"
-                                        onClick={() => executeCommand('projects')}
-                                      >
-                                        Back to Projects
-                                      </button>
-                                    </div>
-                                  ),
-                                  timestamp: new Date().toLocaleTimeString(),
-                                },
-                              ])
-                            }}
-                          >
-                            View Live Preview
-                          </button>
-                        )}
-                        <button
-                          className="mt-6 px-4 py-2 bg-white text-black font-bold font-mono border-2 border-white hover:bg-black hover:text-white transition"
-                          onClick={() => executeCommand('projects')}
-                        >
-                          Back to Projects
-                        </button>
-                      </div>
-                    ),
-                    timestamp: new Date().toLocaleTimeString(),
-                  },
-                ]);
-              }}
-            />
-          </div>
-        )
-
-        setCommands([
-          {
-            id: Date.now().toString(),
-            input: "",
-            output: projectNode,
-            timestamp: new Date().toLocaleTimeString(),
-          },
-        ])
-
-        // update section state so header shows PROJECTS
-        setCurrentSection("projects")
-      }, 2000)
+        setCommands([{
+          id: Date.now().toString(),
+          input: "projects",
+          output: (
+            <div className="h-[60vh] -mx-4 sm:-mx-6">
+              <TerminalProjectsGallery />
+            </div>
+          ),
+          timestamp: new Date().toLocaleTimeString()
+        }])
+      }, 1500)
+      newSection = "projects"
     } else if (trimmed === "blog") {
       output = contentData.blog.content
       newSection = "blog"
@@ -484,25 +311,13 @@ Send me an email or reach out on social media!
     } else if (trimmed === "home") {
       output = contentData.home.content
       newSection = "home"
-      setProjectsModalOpen(false)
     } else if (trimmed === "back") {
-      output = contentData.projects.content
-      newSection = "projects"
-      setSelectedProjectId(null)
+      // Go back to home
+      output = contentData.home.content
+      newSection = "home"
     } else if (trimmed.startsWith("view ")) {
-      const projectNum = Number.parseInt(trimmed.split(" ")[1])
-      if (projectNum && projectNum >= 1 && projectNum <= PROJECTS.length) {
-        // Show TV noise effect before opening project
-        output = `$ Initiating project viewer...`
-        setShowTVNoise(true)
-        setTimeout(() => {
-          setShowTVNoise(false)
-          setProjectsModalOpen(true)
-          setSelectedProjectId(projectNum)
-        }, 2500)
-      } else {
-        output = `Error: Project ${projectNum} not found. Available: 1-${PROJECTS.length}`
-      }
+      // View command now opens gallery  
+      output = `Use the 'projects' command to view project gallery`
     } else if (trimmed.startsWith("blog ")) {
       const num = trimmed.split(" ")[1]
       output = `Loading blog post ${num}...\n\n[This would show full blog content]`
@@ -601,6 +416,25 @@ Made with ❤️ using Next.js and React`
           <div>Memory: 2048MB / 16384MB</div>
         </div>
       )
+    } else if (trimmed === "gallery") {
+      // Same as projects command
+      setShowTVNoise(true)
+      setCommands(prev => prev.filter(c => c.id !== "0"))
+      output = `$ Loading projects gallery...`
+      
+      setTimeout(() => {
+        setShowTVNoise(false)
+        setCommands([{
+          id: Date.now().toString(),
+          input: "gallery",
+          output: (
+            <div className="h-[60vh] -mx-4 sm:-mx-6">
+              <TerminalProjectsGallery />
+            </div>
+          ),
+          timestamp: new Date().toLocaleTimeString()
+        }])
+      }, 1500)
     } else if (trimmed === "static" || trimmed === "tv") {
       setShowTVNoise(true)
       output = `$ Generating TV static...`
@@ -706,22 +540,6 @@ Made with ❤️ using Next.js and React`
         </motion.div>
       )}
 
-      <ProjectModal
-        isOpen={projectsModalOpen}
-        projects={PROJECTS}
-        onClose={() => {
-          setProjectsModalOpen(false)
-          setSelectedProjectId(null)
-        }}
-        onSelectProject={(id) => {
-          if (id === 0) {
-            setSelectedProjectId(null)
-          } else {
-            setSelectedProjectId(id)
-          }
-        }}
-        selectedProjectId={selectedProjectId}
-      />
 
       {terminalReady && (
         <ScrollReveal direction="up" delay={0.2}>
@@ -892,6 +710,7 @@ Made with ❤️ using Next.js and React`
         </motion.div>
       </ScrollReveal>
       )}
+
     </div>
   )
 }

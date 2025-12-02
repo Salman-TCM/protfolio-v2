@@ -473,6 +473,260 @@ input[type="text"], textarea {
   }
 }
 
+/* Retro color classes for project viewer */
+.border-cyan-400 {
+  border-color: rgb(34, 211, 238) !important;
+}
+
+.text-cyan-400 {
+  color: rgb(34, 211, 238) !important;
+}
+
+.border-magenta-400 {
+  border-color: rgb(244, 114, 182) !important;
+}
+
+.text-magenta-400 {
+  color: rgb(244, 114, 182) !important;
+}
+
+.border-purple-400 {
+  border-color: rgb(167, 139, 250) !important;
+}
+
+.text-purple-400 {
+  color: rgb(167, 139, 250) !important;
+}
+
+.bg-cyan-400\/5 {
+  background-color: rgba(34, 211, 238, 0.05) !important;
+}
+
+.bg-magenta-400\/5 {
+  background-color: rgba(244, 114, 182, 0.05) !important;
+}
+
+.bg-purple-400\/5 {
+  background-color: rgba(167, 139, 250, 0.05) !important;
+}
+
+/* Enhanced CRT effects */
+@keyframes crtFlicker {
+  0% { opacity: 0.97; }
+  50% { opacity: 1; }
+  100% { opacity: 0.98; }
+}
+
+.crt-flicker {
+  animation: crtFlicker 0.15s infinite;
+}
+
+/* Enhanced VHS glitch effects */
+@keyframes vhsTracking {
+  0% { transform: translateY(0); }
+  10% { transform: translateY(-2px); }
+  20% { transform: translateY(2px); }
+  30% { transform: translateY(-1px); }
+  40% { transform: translateY(1px); }
+  50% { transform: translateY(0); }
+  100% { transform: translateY(0); }
+}
+
+.vhs-tracking {
+  animation: vhsTracking 0.5s ease-in-out;
+}
+
+@keyframes vhsColorShift {
+  0% { filter: hue-rotate(0deg) saturate(1); }
+  25% { filter: hue-rotate(90deg) saturate(1.2); }
+  50% { filter: hue-rotate(180deg) saturate(0.8); }
+  75% { filter: hue-rotate(270deg) saturate(1.1); }
+  100% { filter: hue-rotate(360deg) saturate(1); }
+}
+
+.vhs-color-shift {
+  animation: vhsColorShift 2s ease-in-out infinite;
+}
+
+/* Retro glow pulse effect */
+@keyframes retroGlowPulse {
+  0%, 100% { 
+    box-shadow: 
+      0 0 20px currentColor,
+      0 0 40px currentColor,
+      inset 0 0 20px currentColor;
+  }
+  50% { 
+    box-shadow: 
+      0 0 30px currentColor,
+      0 0 60px currentColor,
+      inset 0 0 30px currentColor;
+  }
+}
+
+.retro-glow-pulse {
+  animation: retroGlowPulse 2s ease-in-out infinite;
+}
+
+/* Enhanced scanlines for project viewer */
+.scanlines-enhanced {
+  position: relative;
+  overflow: hidden;
+}
+
+.scanlines-enhanced::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.03) 0px,
+      transparent 1px,
+      transparent 2px,
+      rgba(255, 255, 255, 0.03) 3px
+    );
+  pointer-events: none;
+  z-index: 50;
+  animation: scanlines 8s linear infinite;
+}
+
+/* Retro terminal border effect */
+.terminal-border {
+  border: 2px solid currentColor;
+  box-shadow: 
+    0 0 10px currentColor,
+    0 0 20px currentColor,
+    inset 0 0 10px rgba(255, 255, 255, 0.1);
+}
+
+/* Mobile swipe hint animation */
+@keyframes swipeHint {
+  0%, 100% { transform: translateX(0); opacity: 0.4; }
+  50% { transform: translateX(10px); opacity: 0.8; }
+}
+
+.swipe-hint-right {
+  animation: swipeHint 2s ease-in-out infinite;
+}
+
+@keyframes swipeHintLeft {
+  0%, 100% { transform: translateX(0); opacity: 0.4; }
+  50% { transform: translateX(-10px); opacity: 0.8; }
+}
+
+.swipe-hint-left {
+  animation: swipeHintLeft 2s ease-in-out infinite;
+}
+
+/* Project viewer specific animations */
+@keyframes projectViewerEnter {
+  from {
+    opacity: 0;
+    transform: scale(0.8) rotateX(10deg);
+    filter: blur(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) rotateX(0deg);
+    filter: blur(0);
+  }
+}
+
+.project-viewer-enter {
+  animation: projectViewerEnter 0.6s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+@keyframes projectViewerExit {
+  from {
+    opacity: 1;
+    transform: scale(1) rotateX(0deg);
+    filter: blur(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.2) rotateX(-10deg);
+    filter: blur(20px);
+  }
+}
+
+.project-viewer-exit {
+  animation: projectViewerExit 0.6s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+/* Media transition effects */
+@keyframes mediaSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(100px) scale(0.9);
+    filter: blur(5px) brightness(0.5);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+    filter: blur(0) brightness(1);
+  }
+}
+
+.media-slide-in {
+  animation: mediaSlideIn 0.8s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+@keyframes mediaSlideOut {
+  from {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+    filter: blur(0) brightness(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-100px) scale(1.1);
+    filter: blur(5px) brightness(1.5);
+  }
+}
+
+.media-slide-out {
+  animation: mediaSlideOut 0.8s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+/* Retro loading screen effect */
+@keyframes retroLoading {
+  0% { transform: scaleX(0); opacity: 0; }
+  50% { transform: scaleX(1); opacity: 1; }
+  100% { transform: scaleX(0); opacity: 0; }
+}
+
+.retro-loading {
+  animation: retroLoading 2s ease-in-out infinite;
+}
+
+/* Custom scrollbar for project viewer */
+.project-viewer-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.project-viewer-scrollbar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+.project-viewer-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #00ffff, #ff00ff, #00ffff);
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.3);
+}
+
+.project-viewer-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #00ffff, #00ff00, #ff00ff);
+  box-shadow: 
+    inset 0 0 2px rgba(0, 0, 0, 0.3), 
+    0 0 8px rgba(0, 255, 255, 0.5);
+}
+
 /* Text reveal mask animation */
 @keyframes textReveal {
   from {
@@ -517,5 +771,15 @@ input[type="text"], textarea {
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+/* Scanlines animation for CRT effect */
+@keyframes scanlines {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 0 4px;
   }
 }
