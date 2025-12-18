@@ -37,64 +37,170 @@ export function GlitchText({ children, isActive = false }: { children: string; i
   return <span>{children}</span>
 }
 
-// Terminal Boot Sequence
-export function TerminalBootSequence({ onComplete }: { onComplete: () => void }) {
+// Simple Terminal Boot Sequence
+export function TerminalBootSequence({ 
+  onComplete, 
+  theme = 'green',
+  skip = false 
+}: { 
+  onComplete: () => void; 
+  theme?: keyof typeof RETRO_THEMES;
+  skip?: boolean;
+}) {
   const [currentStep, setCurrentStep] = useState(0)
   const [isComplete, setIsComplete] = useState(false)
+  const currentTheme = RETRO_THEMES[theme]
 
   const bootSteps = [
-    "BIOS POST... OK",
-    "Loading kernel modules...",
-    "Initializing hardware drivers...",
-    "Starting network services...",
-    "Mounting file systems...",
-    "Loading user profile...",
-    "TERMINAL READY"
+    "INITIALIZING SYSTEM...",
+    "LOADING TERMINAL...",
+    "CALIBRATING PHOSPHOR DISPLAY...",
+    "READY"
   ]
 
   useEffect(() => {
+    if (skip) {
+      setIsComplete(true)
+      setTimeout(onComplete, 100)
+      return
+    }
+
     if (currentStep < bootSteps.length - 1) {
       const timer = setTimeout(() => {
         setCurrentStep(prev => prev + 1)
-      }, 300 + Math.random() * 400)
+      }, 200 + Math.random() * 300)
       return () => clearTimeout(timer)
     } else {
       const timer = setTimeout(() => {
         setIsComplete(true)
-        setTimeout(onComplete, 800)
+        setTimeout(onComplete, 1000)
       }, 1000)
       return () => clearTimeout(timer)
     }
-  }, [currentStep, bootSteps.length, onComplete])
+  }, [currentStep, bootSteps.length, onComplete, skip])
+
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if (e.key === ' ' || e.key === 'Enter') {
+        setIsComplete(true)
+        setTimeout(onComplete, 100)
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyPress)
+    return () => window.removeEventListener('keydown', handleKeyPress)
+  }, [onComplete])
 
   if (isComplete) return null
 
   return (
     <motion.div
-      className="fixed inset-0 bg-black z-50 flex items-center justify-center font-mono"
+      className="fixed inset-0 bg-black z-50 flex items-center justify-center font-mono overflow-hidden"
       exit={{ opacity: 0 }}
+      style={{ backgroundColor: currentTheme.background }}
     >
-      <div className="max-w-md">
-        {bootSteps.slice(0, currentStep + 1).map((step, index) => (
+      {/* CRT Effect Overlay */}
+      <div 
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: `repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 2px,
+            ${currentTheme.scanline} 2px,
+            ${currentTheme.scanline} 4px
+          )`
+        }}
+      />
+
+      {/* Screen flicker effect */}
+      <motion.div 
+        className="absolute inset-0 pointer-events-none"
+        animate={{ opacity: [0.95, 1, 0.98, 1] }}
+        transition={{ duration: 0.15, repeat: Infinity }}
+        style={{ backgroundColor: 'rgba(0, 0, 0, 0.02)' }}
+      />
+
+      <div className="max-w-4xl w-full px-8 relative z-10">
+        {/* Boot Messages */}
+        <div className="space-y-1">
+          {bootSteps.slice(0, currentStep + 1).map((step, index) => (
+            <motion.div
+              key={index}
+              className="text-sm flex items-center gap-2"
+              style={{ color: currentTheme.secondary }}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <span style={{ color: currentTheme.dim }}>{">"}</span>
+              <span className="flex-1">{step}</span>
+              {index === currentStep && !isComplete && (
+                <motion.span
+                  style={{ color: currentTheme.primary }}
+                  animate={{ opacity: [0, 1, 0] }}
+                  transition={{ duration: 0.8, repeat: Infinity }}
+                >
+                  █
+                </motion.span>
+              )}
+              {index < currentStep && (
+                <motion.span
+                  style={{ color: currentTheme.primary }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.2 }}
+                >
+                  ✓
+                </motion.span>
+              )}
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Progress Bar */}
+        {currentStep > 2 && currentStep < bootSteps.length - 1 && (
           <motion.div
-            key={index}
-            className="text-white text-sm mb-2"
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.3 }}
+            className="mt-6"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
           >
-            <span className="text-gray">{">"}</span> {step}
-            {index === currentStep && (
-              <motion.span
-                className="ml-2"
-                animate={{ opacity: [0, 1, 0] }}
-                transition={{ duration: 0.8, repeat: Infinity }}
-              >
-                █
-              </motion.span>
-            )}
+            <div 
+              className="h-2 border rounded-sm overflow-hidden"
+              style={{ borderColor: currentTheme.primary }}
+            >
+              <motion.div
+                className="h-full rounded-sm"
+                style={{ 
+                  backgroundColor: currentTheme.primary,
+                  boxShadow: `0 0 10px ${currentTheme.glow}`
+                }}
+                initial={{ width: 0 }}
+                animate={{ width: `${(currentStep / (bootSteps.length - 1)) * 100}%` }}
+                transition={{ duration: 0.5 }}
+              />
+            </div>
+            <div 
+              className="text-xs mt-2 text-center"
+              style={{ color: currentTheme.dim }}
+            >
+              {Math.round((currentStep / (bootSteps.length - 1)) * 100)}%
+            </div>
           </motion.div>
-        ))}
+        )}
+
+        {/* Skip hint */}
+        {currentStep > 0 && !isComplete && (
+          <motion.div
+            className="text-center mt-8 text-xs opacity-60"
+            style={{ color: currentTheme.dim }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 0.6 }}
+            transition={{ delay: 1 }}
+          >
+            Press SPACE or ENTER to skip
+          </motion.div>
+        )}
       </div>
     </motion.div>
   )
@@ -199,51 +305,298 @@ export function TerminalProgressBar({
   )
 }
 
-// ASCII Art Loader
+// Simple Retro Loader
 export function ASCIILoader({ isVisible }: { isVisible: boolean }) {
-  const [frame, setFrame] = useState(0)
-
-  const frames = [
-    "◐", "◓", "◑", "◒"
-  ]
+  const [dots, setDots] = useState(0)
 
   useEffect(() => {
     if (!isVisible) return
 
     const interval = setInterval(() => {
-      setFrame(prev => (prev + 1) % frames.length)
-    }, 200)
+      setDots(prev => (prev + 1) % 4)
+    }, 300)
 
     return () => clearInterval(interval)
-  }, [isVisible, frames.length])
+  }, [isVisible])
 
   if (!isVisible) return null
 
   return (
-    <span className="text-white font-mono">
-      {frames[frame]}
+    <span className="text-green-400 font-mono text-sm">
+      LOADING{Array(dots + 1).fill('.').join('')}
     </span>
   )
 }
 
-// Terminal Window Manager
-export function TerminalWindowEffect({ children }: { children: React.ReactNode }) {
-  const [flicker, setFlicker] = useState(false)
+// Retro Terminal Color Themes
+export const RETRO_THEMES = {
+  green: {
+    primary: '#00ff41',
+    secondary: '#00cc33',
+    dim: '#008025',
+    glow: 'rgba(0, 255, 65, 0.3)',
+    text: '#00ff41',
+    background: '#000000',
+    scanline: 'rgba(0, 255, 65, 0.02)'
+  },
+  amber: {
+    primary: '#ffb000',
+    secondary: '#cc8800',
+    dim: '#805500',
+    glow: 'rgba(255, 176, 0, 0.3)',
+    text: '#ffb000',
+    background: '#000000',
+    scanline: 'rgba(255, 176, 0, 0.02)'
+  },
+  white: {
+    primary: '#ffffff',
+    secondary: '#cccccc',
+    dim: '#888888',
+    glow: 'rgba(255, 255, 255, 0.3)',
+    text: '#ffffff',
+    background: '#000000',
+    scanline: 'rgba(255, 255, 255, 0.02)'
+  },
+  cyberspace: {
+    primary: '#00ffff',
+    secondary: '#00cccc',
+    dim: '#008888',
+    glow: 'rgba(0, 255, 255, 0.3)',
+    text: '#00ffff',
+    background: '#000011',
+    scanline: 'rgba(0, 255, 255, 0.02)'
+  }
+}
+
+// Enhanced CRT Effect with Chromatic Aberration
+export function EnhancedCRTEffect({ 
+  children, 
+  theme = 'green',
+  intensity = 0.5 
+}: { 
+  children: React.ReactNode; 
+  theme?: keyof typeof RETRO_THEMES;
+  intensity?: number;
+}) {
+  const [chromaticShift, setChromaticShift] = useState(0)
+  const currentTheme = RETRO_THEMES[theme]
 
   useEffect(() => {
     const interval = setInterval(() => {
-      if (Math.random() < 0.01) { // 1% chance
-        setFlicker(true)
-        setTimeout(() => setFlicker(false), 50)
-      }
+      setChromaticShift(Math.random() * 2 - 1) // Random shift between -1 and 1
     }, 100)
 
     return () => clearInterval(interval)
   }, [])
 
   return (
-    <div className={`transition-opacity duration-50 ${flicker ? 'opacity-95' : 'opacity-100'}`}>
+    <div 
+      className="relative"
+      style={{
+        '--retro-primary': currentTheme.primary,
+        '--retro-secondary': currentTheme.secondary,
+        '--retro-dim': currentTheme.dim,
+        '--retro-glow': currentTheme.glow,
+        '--retro-text': currentTheme.text,
+        '--retro-bg': currentTheme.background,
+        '--retro-scanline': currentTheme.scanline,
+      } as React.CSSProperties}
+    >
+      {/* Chromatic Aberration Layers */}
+      <div 
+        className="absolute inset-0 pointer-events-none z-20 opacity-30"
+        style={{
+          transform: `translateX(${chromaticShift * intensity}px)`,
+          filter: 'blur(0.5px)',
+          mixBlendMode: 'screen'
+        }}
+      >
+        <div className="w-full h-full" style={{ backgroundColor: 'red' }} />
+      </div>
+      <div 
+        className="absolute inset-0 pointer-events-none z-20 opacity-30"
+        style={{
+          transform: `translateX(${-chromaticShift * intensity}px)`,
+          filter: 'blur(0.5px)',
+          mixBlendMode: 'screen'
+        }}
+      >
+        <div className="w-full h-full" style={{ backgroundColor: 'cyan' }} />
+      </div>
+
+      {/* Screen Curvature */}
+      <div 
+        className="absolute inset-0 pointer-events-none z-30"
+        style={{
+          background: 'radial-gradient(ellipse at center, transparent 0%, rgba(0,0,0,0.15) 70%, rgba(0,0,0,0.3) 100%)',
+          borderRadius: '12px'
+        }}
+      />
+
+      {/* Screen Glow */}
+      <div 
+        className="absolute inset-0 pointer-events-none z-10"
+        style={{
+          boxShadow: `
+            inset 0 0 120px ${currentTheme.glow},
+            inset 0 0 60px ${currentTheme.glow},
+            0 0 40px ${currentTheme.glow}
+          `
+        }}
+      />
+
+      {/* Vignette Effect */}
+      <div 
+        className="absolute inset-0 pointer-events-none z-25"
+        style={{
+          boxShadow: 'inset 0 0 200px rgba(0,0,0,0.8)'
+        }}
+      />
+
       {children}
+    </div>
+  )
+}
+
+// Terminal Window Manager with Enhanced Effects
+export function TerminalWindowEffect({ 
+  children, 
+  theme = 'green',
+  enableFlicker = true,
+  enableGhosting = true 
+}: { 
+  children: React.ReactNode; 
+  theme?: keyof typeof RETRO_THEMES;
+  enableFlicker?: boolean;
+  enableGhosting?: boolean;
+}) {
+  const [flicker, setFlicker] = useState(false)
+  const [ghosting, setGhosting] = useState(false)
+  const currentTheme = RETRO_THEMES[theme]
+
+  useEffect(() => {
+    if (!enableFlicker) return
+
+    const flickerInterval = setInterval(() => {
+      if (Math.random() < 0.02) { // 2% chance
+        setFlicker(true)
+        setTimeout(() => setFlicker(false), 50 + Math.random() * 100)
+      }
+    }, 100)
+
+    return () => clearInterval(flickerInterval)
+  }, [enableFlicker])
+
+  useEffect(() => {
+    if (!enableGhosting) return
+
+    const ghostingInterval = setInterval(() => {
+      if (Math.random() < 0.005) { // 0.5% chance
+        setGhosting(true)
+        setTimeout(() => setGhosting(false), 200)
+      }
+    }, 200)
+
+    return () => clearInterval(ghostingInterval)
+  }, [enableGhosting])
+
+  return (
+    <div 
+      className={`relative transition-all duration-50 ${
+        flicker ? 'opacity-90 brightness-110' : 'opacity-100 brightness-100'
+      } ${ghosting ? 'blur-sm' : ''}`}
+      style={{
+        filter: ghosting ? 'blur(1px) contrast(1.2)' : 'none',
+        textShadow: `0 0 10px ${currentTheme.glow}`
+      }}
+    >
+      {/* Phosphor Persistence Effect */}
+      <div 
+        className="absolute inset-0 pointer-events-none opacity-20"
+        style={{
+          background: `linear-gradient(180deg, transparent, ${currentTheme.scanline})`,
+          mixBlendMode: 'screen'
+        }}
+      />
+      
+      {children}
+    </div>
+  )
+}
+
+// Retro Terminal Header with System Info
+export function RetroTerminalHeader({ 
+  theme = 'green',
+  title = 'TERMINAL',
+  showSystemInfo = true 
+}: {
+  theme?: keyof typeof RETRO_THEMES;
+  title?: string;
+  showSystemInfo?: boolean;
+}) {
+  const [currentTime, setCurrentTime] = useState(new Date())
+  const currentTheme = RETRO_THEMES[theme]
+
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date()), 1000)
+    return () => clearInterval(timer)
+  }, [])
+
+  return (
+    <div 
+      className="px-4 py-2 border-b flex justify-between items-center"
+      style={{
+        borderColor: currentTheme.primary,
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        boxShadow: `inset 0 -1px 0 ${currentTheme.glow}`
+      }}
+    >
+      <div className="flex items-center gap-4">
+        <span 
+          className="font-bold font-mono text-sm tracking-wider"
+          style={{ color: currentTheme.primary, textShadow: `0 0 5px ${currentTheme.glow}` }}
+        >
+          {title}
+        </span>
+        {showSystemInfo && (
+          <div className="flex items-center gap-2">
+            <div 
+              className="w-2 h-2 rounded-full animate-pulse"
+              style={{ backgroundColor: currentTheme.primary }}
+            />
+            <span 
+              className="font-mono text-xs opacity-70"
+              style={{ color: currentTheme.secondary }}
+            >
+              ONLINE
+            </span>
+          </div>
+        )}
+      </div>
+      
+      <div className="flex items-center gap-6">
+        <span 
+          className="font-mono text-xs opacity-70"
+          style={{ color: currentTheme.secondary }}
+        >
+          {currentTime.toLocaleTimeString()}
+        </span>
+        <div className="flex gap-2">
+          {['_', '□', '×'].map((char, i) => (
+            <button
+              key={i}
+              className="w-4 h-4 flex items-center justify-center font-mono text-xs hover:opacity-100 transition-opacity"
+              style={{ 
+                color: currentTheme.primary,
+                opacity: 0.6,
+                border: `1px solid ${currentTheme.primary}`
+              }}
+            >
+              {char}
+            </button>
+          ))}
+        </div>
+      </div>
     </div>
   )
 }
