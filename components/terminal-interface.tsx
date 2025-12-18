@@ -16,8 +16,7 @@ import {
 } from './terminal-effects'
 import { 
   TerminalSoundSimulator, 
-  KeyboardSoundEffect, 
-  BootSoundVisualizer 
+  KeyboardSoundEffect
 } from './terminal-sound-effects'
 import { AboutMeCard } from './about-me-card'
 import { TerminalProjectsGallery } from './terminal-projects-gallery'
@@ -41,6 +40,205 @@ export function TerminalInterface() {
   const [terminalReady, setTerminalReady] = useState(false)
   const [showSoundVisualizer, setShowSoundVisualizer] = useState(false)
   const [isTyping, setIsTyping] = useState(false)
+  const [currentTheme] = useState('green')
+  const [input, setInput] = useState("")
+  const [currentSection, setCurrentSection] = useState("home")
+  const terminalEndRef = useRef<HTMLDivElement>(null)
+
+  // Execute command function
+  const executeCommand = (cmd: string) => {
+    const trimmed = cmd.toLowerCase().trim()
+    let output: string | React.ReactNode = ""
+    let newSection = currentSection
+
+    if (trimmed === "") {
+      return
+    }
+
+    if (trimmed === "help") {
+      output = contentData.home.content
+    } else if (trimmed === "clear") {
+      setCommands([])
+      setInput("")
+      return
+    } else if (trimmed === "about") {
+      output = contentData.about.content
+      newSection = "about"
+    } else if (trimmed === "projects") {
+      // Show project gallery inside terminal
+      setShowTVNoise(true)
+      setCommands(prev => prev.filter(c => c.id !== "0")) // Remove welcome message
+      output = `$ Loading projects gallery...`
+      
+      setTimeout(() => {
+        setShowTVNoise(false)
+        setCommands([{
+          id: Date.now().toString(),
+          input: "projects",
+          output: (
+            <div className="h-screen -mx-2 sm:-mx-4 md:-mx-6 lg:-mx-8 my-2 sm:my-4 md:my-6 lg:my-8">
+              <TerminalProjectsGallery />
+            </div>
+          ),
+          timestamp: new Date().toLocaleTimeString()
+        }])
+      }, 1500)
+      newSection = "projects"
+    } else if (trimmed === "blog") {
+      output = contentData.blog.content
+      newSection = "blog"
+    } else if (trimmed === "skills") {
+      output = contentData.skills.content
+      newSection = "skills"
+    } else if (trimmed === "contact") {
+      output = contentData.contact.content
+      newSection = "contact"
+    } else if (trimmed === "home") {
+      output = contentData.home.content
+      newSection = "home"
+    } else if (trimmed === "back") {
+      // Go back to home
+      output = contentData.home.content
+      newSection = "home"
+    } else if (trimmed.startsWith("view ")) {
+      // View command now opens gallery  
+      output = `Use 'projects' command to view project gallery`
+    } else if (trimmed.startsWith("blog ")) {
+      const num = trimmed.split(" ")[1]
+      output = `Loading blog post ${num}...\n\n[This would show full blog content]`
+    } else if (trimmed === "matrix") {
+      setShowMatrix(true)
+      output = `$ Entering matrix...`
+      setTimeout(() => setShowMatrix(false), 5000)
+    } else if (trimmed === "hack") {
+      setIsHacking(true)
+      output = (
+        <div className="space-y-2">
+          <div className="text-white">$ Initializing hacking sequence...</div>
+          <TerminalProgressBar progress={33} label="Bypassing firewall" />
+          <TerminalProgressBar progress={67} label="Decrypting data" />
+          <TerminalProgressBar progress={100} label="Access granted" isComplete />
+          <div className="text-white font-bold">HACK COMPLETE ✓</div>
+        </div>
+      )
+      setTimeout(() => setIsHacking(false), 3000)
+    } else if (trimmed === "glitch") {
+      output = (
+        <div className="text-white">
+          System <GlitchText isActive={true}>CORRUPTED</GlitchText> - Error 404: Reality not found
+        </div>
+      )
+    } else if (trimmed === "scan") {
+      output = (
+        <div className="space-y-1 text-white">
+          <div>$ Scanning network...</div>
+          <div>192.168.1.1    [ROUTER]         ACTIVE</div>
+          <div>192.168.1.100  [DESKTOP]        ACTIVE</div>
+          <div>192.168.1.255  [BROADCAST]      ACTIVE</div>
+          <div>$ Scan complete: 3 devices found</div>
+        </div>
+      )
+    } else if (trimmed === "status") {
+      output = (
+        <div className="space-y-1 text-white">
+          <div>System Status: <span className="text-white">ONLINE</span></div>
+          <div>CPU Usage: <TerminalProgressBar progress={Math.random() * 100} label="" /></div>
+          <div>Memory: 8.2GB / 16GB</div>
+          <div>Network: Connected</div>
+          <div>Security: <span className="text-white">SECURE</span></div>
+        </div>
+      )
+    } else if (trimmed === "time") {
+      output = `Current time: ${new Date().toLocaleString()}`
+    } else if (trimmed === "weather") {
+      output = (
+        <div className="space-y-1 text-white">
+          <div>Weather Status: Partly Cloudy</div>
+          <div>Temperature: 72°F</div>
+          <div>Humidity: 65%</div>
+          <div>Wind: 5 mph SW</div>
+          <div className="text-gray text-xs mt-2">* Weather data simulated</div>
+        </div>
+      )
+    } else if (trimmed === "whoami") {
+      output = `visitor@portfolio-terminal\nYou are browsing Salman's portfolio`
+    } else if (trimmed === "pwd") {
+      output = `/home/visitor/portfolio`
+    } else if (trimmed === "ls") {
+      output = `about.md  blog/  contact.txt  projects/  skills.json  README.md`
+    } else if (trimmed === "cat readme") {
+      output = `# Salman's Portfolio Terminal
+      
+Welcome to my interactive terminal portfolio!
+
+This terminal simulates a real command-line interface
+where you can explore my projects, skills, and background.
+
+Type "help" for available commands.
+
+Made with ❤️ using Next.js and React`
+    } else if (trimmed === "ps") {
+      output = (
+        <div className="space-y-1 text-white font-mono text-sm">
+          <div>PID   COMMAND</div>
+          <div>001   terminal.exe</div>
+          <div>002   portfolio-server</div>
+          <div>003   animation-engine</div>
+          <div>004   sound-visualizer</div>
+        </div>
+      )
+    } else if (trimmed === "neofetch") {
+      output = (
+        <div className="space-y-1 text-white font-mono text-sm">
+          <div className="text-white">visitor@portfolio</div>
+          <div>----------------</div>
+          <div>OS: Portfolio Linux</div>
+          <div>Host: Terminal Interface</div>
+          <div>Kernel: 5.15.0-portfolio</div>
+          <div>Shell: bash 5.1.4</div>
+          <div>Terminal: portfolio-term</div>
+          <div>CPU: Intel i7-8700K</div>
+          <div>Memory: 2048MB / 16384MB</div>
+        </div>
+      )
+    } else if (trimmed === "gallery") {
+      // Same as projects command
+      setShowTVNoise(true)
+      setCommands(prev => prev.filter(c => c.id !== "0"))
+      output = `$ Loading projects gallery...`
+      
+      setTimeout(() => {
+        setShowTVNoise(false)
+        setCommands([{
+          id: Date.now().toString(),
+          input: "gallery",
+          output: (
+            <div className="h-screen -mx-2 sm:-mx-4 md:-mx-6 lg:-mx-8 my-2 sm:my-4 md:my-6 lg:my-8">
+              <TerminalProjectsGallery />
+            </div>
+          ),
+          timestamp: new Date().toLocaleTimeString()
+        }])
+      }, 1500)
+    } else if (trimmed === "static" || trimmed === "tv") {
+      setShowTVNoise(true)
+      output = `$ Generating TV static...`
+      setTimeout(() => setShowTVNoise(false), 3000)
+    } else {
+      output = `Command not found: ${trimmed}\nType "help" for available commands`
+    }
+
+    const newCommand: TerminalCommand = {
+      id: Date.now().toString(),
+      input: cmd,
+      output,
+      timestamp: new Date().toLocaleTimeString(),
+    }
+
+    setCommands([...commands, newCommand])
+    setCurrentSection(newSection)
+    setInput("")
+  }
   
   const [commands, setCommands] = useState<TerminalCommand[]>([
     {
@@ -78,9 +276,6 @@ export function TerminalInterface() {
       timestamp: "",
     },
   ])
-  const [input, setInput] = useState("")
-  const [currentSection, setCurrentSection] = useState("home")
-  const terminalEndRef = useRef<HTMLDivElement>(null)
 
   const handleNavigate = (command: string) => {
     executeCommand(command)
@@ -261,200 +456,6 @@ Send me an email or reach out on social media!
     },
   }
 
-  const executeCommand = (cmd: string) => {
-    const trimmed = cmd.toLowerCase().trim()
-    let output: string | React.ReactNode = ""
-    let newSection = currentSection
-
-    if (trimmed === "") {
-      return
-    }
-
-    if (trimmed === "help") {
-      output = contentData.home.content
-    } else if (trimmed === "clear") {
-      setCommands([])
-      setInput("")
-      return
-    } else if (trimmed === "about") {
-      output = contentData.about.content
-      newSection = "about"
-    } else if (trimmed === "projects") {
-      // Show project gallery inside terminal
-      setShowTVNoise(true)
-      setCommands(prev => prev.filter(c => c.id !== "0")) // Remove welcome message
-      output = `$ Loading projects gallery...`
-      
-      setTimeout(() => {
-        setShowTVNoise(false)
-        setCommands([{
-          id: Date.now().toString(),
-          input: "projects",
-          output: (
-            <div className="h-[60vh] -mx-4 sm:-mx-6">
-              <TerminalProjectsGallery />
-            </div>
-          ),
-          timestamp: new Date().toLocaleTimeString()
-        }])
-      }, 1500)
-      newSection = "projects"
-    } else if (trimmed === "blog") {
-      output = contentData.blog.content
-      newSection = "blog"
-    } else if (trimmed === "skills") {
-      output = contentData.skills.content
-      newSection = "skills"
-    } else if (trimmed === "contact") {
-      output = contentData.contact.content
-      newSection = "contact"
-    } else if (trimmed === "home") {
-      output = contentData.home.content
-      newSection = "home"
-    } else if (trimmed === "back") {
-      // Go back to home
-      output = contentData.home.content
-      newSection = "home"
-    } else if (trimmed.startsWith("view ")) {
-      // View command now opens gallery  
-      output = `Use the 'projects' command to view project gallery`
-    } else if (trimmed.startsWith("blog ")) {
-      const num = trimmed.split(" ")[1]
-      output = `Loading blog post ${num}...\n\n[This would show full blog content]`
-    } else if (trimmed === "matrix") {
-      setShowMatrix(true)
-      output = `$ Entering the matrix...`
-      setTimeout(() => setShowMatrix(false), 5000)
-    } else if (trimmed === "hack") {
-      setIsHacking(true)
-      output = (
-        <div className="space-y-2">
-          <div className="text-white">$ Initializing hacking sequence...</div>
-          <TerminalProgressBar progress={33} label="Bypassing firewall" />
-          <TerminalProgressBar progress={67} label="Decrypting data" />
-          <TerminalProgressBar progress={100} label="Access granted" isComplete />
-          <div className="text-white font-bold">HACK COMPLETE ✓</div>
-        </div>
-      )
-      setTimeout(() => setIsHacking(false), 3000)
-    } else if (trimmed === "glitch") {
-      output = (
-        <div className="text-white">
-          System <GlitchText isActive={true}>CORRUPTED</GlitchText> - Error 404: Reality not found
-        </div>
-      )
-    } else if (trimmed === "scan") {
-      output = (
-        <div className="space-y-1 text-white">
-          <div>$ Scanning network...</div>
-          <div>192.168.1.1    [ROUTER]         ACTIVE</div>
-          <div>192.168.1.100  [DESKTOP]        ACTIVE</div>
-          <div>192.168.1.255  [BROADCAST]      ACTIVE</div>
-          <div>$ Scan complete: 3 devices found</div>
-        </div>
-      )
-    } else if (trimmed === "status") {
-      output = (
-        <div className="space-y-1 text-white">
-          <div>System Status: <span className="text-white">ONLINE</span></div>
-          <div>CPU Usage: <TerminalProgressBar progress={Math.random() * 100} label="" /></div>
-          <div>Memory: 8.2GB / 16GB</div>
-          <div>Network: Connected</div>
-          <div>Security: <span className="text-white">SECURE</span></div>
-        </div>
-      )
-    } else if (trimmed === "time") {
-      output = `Current time: ${new Date().toLocaleString()}`
-    } else if (trimmed === "weather") {
-      output = (
-        <div className="space-y-1 text-white">
-          <div>Weather Status: Partly Cloudy</div>
-          <div>Temperature: 72°F</div>
-          <div>Humidity: 65%</div>
-          <div>Wind: 5 mph SW</div>
-          <div className="text-gray text-xs mt-2">* Weather data simulated</div>
-        </div>
-      )
-    } else if (trimmed === "whoami") {
-      output = `visitor@portfolio-terminal\nYou are browsing Salman's portfolio`
-    } else if (trimmed === "pwd") {
-      output = `/home/visitor/portfolio`
-    } else if (trimmed === "ls") {
-      output = `about.md  blog/  contact.txt  projects/  skills.json  README.md`
-    } else if (trimmed === "cat readme") {
-      output = `# Salman's Portfolio Terminal
-      
-Welcome to my interactive terminal portfolio!
-
-This terminal simulates a real command-line interface
-where you can explore my projects, skills, and background.
-
-Type "help" for available commands.
-
-Made with ❤️ using Next.js and React`
-    } else if (trimmed === "ps") {
-      output = (
-        <div className="space-y-1 text-white font-mono text-sm">
-          <div>PID   COMMAND</div>
-          <div>001   terminal.exe</div>
-          <div>002   portfolio-server</div>
-          <div>003   animation-engine</div>
-          <div>004   sound-visualizer</div>
-        </div>
-      )
-    } else if (trimmed === "neofetch") {
-      output = (
-        <div className="space-y-1 text-white font-mono text-sm">
-          <div className="text-white">visitor@portfolio</div>
-          <div>----------------</div>
-          <div>OS: Portfolio Linux</div>
-          <div>Host: Terminal Interface</div>
-          <div>Kernel: 5.15.0-portfolio</div>
-          <div>Shell: bash 5.1.4</div>
-          <div>Terminal: portfolio-term</div>
-          <div>CPU: Intel i7-8700K</div>
-          <div>Memory: 2048MB / 16384MB</div>
-        </div>
-      )
-    } else if (trimmed === "gallery") {
-      // Same as projects command
-      setShowTVNoise(true)
-      setCommands(prev => prev.filter(c => c.id !== "0"))
-      output = `$ Loading projects gallery...`
-      
-      setTimeout(() => {
-        setShowTVNoise(false)
-        setCommands([{
-          id: Date.now().toString(),
-          input: "gallery",
-          output: (
-            <div className="h-[60vh] -mx-4 sm:-mx-6">
-              <TerminalProjectsGallery />
-            </div>
-          ),
-          timestamp: new Date().toLocaleTimeString()
-        }])
-      }, 1500)
-    } else if (trimmed === "static" || trimmed === "tv") {
-      setShowTVNoise(true)
-      output = `$ Generating TV static...`
-      setTimeout(() => setShowTVNoise(false), 3000)
-    } else {
-      output = `Command not found: ${trimmed}\nType "help" for available commands`
-    }
-
-    const newCommand: TerminalCommand = {
-      id: Date.now().toString(),
-      input: cmd,
-      output,
-      timestamp: new Date().toLocaleTimeString(),
-    }
-
-    setCommands([...commands, newCommand])
-    setCurrentSection(newSection)
-    setInput("")
-  }
-
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
       executeCommand(input)
@@ -500,7 +501,6 @@ Made with ❤️ using Next.js and React`
       {/* Sound Effects */}
       <TerminalSoundSimulator isTyping={isTyping} />
       <KeyboardSoundEffect isActive={isTyping} />
-      <BootSoundVisualizer isActive={showBootSequence} />
 
       <FloatingNavigation onNavigate={handleNavigate} />
 
