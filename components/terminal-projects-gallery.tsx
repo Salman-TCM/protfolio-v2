@@ -164,6 +164,19 @@ export function TerminalProjectsGallery() {
 
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartY.current = e.touches[0].clientY
+    e.preventDefault() // Prevent default touch behavior
+  }
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (showProjectInfo) return // Don't swipe when info is open
+    
+    const currentTouchY = e.touches[0].clientY
+    const diff = touchStartY.current - currentTouchY
+
+    // Provide immediate visual feedback for swipe direction
+    if (Math.abs(diff) > 10) {
+      e.preventDefault() // Prevent page scroll when swiping
+    }
   }
 
   const handleTouchEnd = (e: React.TouchEvent) => {
@@ -172,7 +185,8 @@ export function TerminalProjectsGallery() {
     const touchEndY = e.changedTouches[0].clientY
     const diff = touchStartY.current - touchEndY
 
-    if (Math.abs(diff) > 50) {
+    // Reduced threshold for easier mobile scrolling
+    if (Math.abs(diff) > 30) {
       setIsGlitching(true)
       setTimeout(() => {
         if (diff > 0 && currentProjectIndex < PROJECTS.length - 1) {
@@ -251,10 +265,12 @@ export function TerminalProjectsGallery() {
   return (
     <div 
       ref={containerRef}
-      className="h-full w-full bg-black overflow-hidden relative"
+      className="h-full w-full bg-black overflow-hidden relative touch-none"
       onWheel={handleScroll}
       onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
+      style={{ touchAction: 'none' }}
     >
       {/* Full Screen Container - No TV Frame */}
       <div className="absolute inset-0 bg-black">
