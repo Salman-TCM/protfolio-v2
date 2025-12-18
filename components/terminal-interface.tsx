@@ -76,7 +76,7 @@ export function TerminalInterface() {
           id: Date.now().toString(),
           input: "projects",
           output: (
-            <div className="h-[60vh] -mx-4 sm:-mx-6">
+            <div className="h-screen -mx-2 sm:-mx-4 md:-mx-6 lg:-mx-8 my-2 sm:my-4 md:my-6 lg:my-8">
               <TerminalProjectsGallery />
             </div>
           ),
@@ -213,7 +213,7 @@ Made with ❤️ using Next.js and React`
           id: Date.now().toString(),
           input: "gallery",
           output: (
-            <div className="h-[60vh] -mx-4 sm:-mx-6">
+            <div className="h-screen -mx-2 sm:-mx-4 md:-mx-6 lg:-mx-8 my-2 sm:my-4 md:my-6 lg:my-8">
               <TerminalProjectsGallery />
             </div>
           ),

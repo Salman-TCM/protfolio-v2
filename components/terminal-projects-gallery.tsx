@@ -137,7 +137,7 @@ export function TerminalProjectsGallery() {
   const [imageLoading, setImageLoading] = useState(true)
   const containerRef = useRef<HTMLDivElement>(null)
   const scrollTimeoutRef = useRef<NodeJS.Timeout>()
-  const touchStartY = useRef(0)
+  const touchStartY = useRef<number>(0)
 
   const currentProject = PROJECTS[currentProjectIndex]
 
@@ -256,18 +256,11 @@ export function TerminalProjectsGallery() {
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
-      {/* Retro TV Frame */}
+      {/* Full Screen Container - No TV Frame */}
       <div className="absolute inset-0 bg-black">
-        {/* TV Screen with curved corners */}
+        {/* Full Screen Display - No Borders */}
         <div 
-          className="absolute inset-4 md:inset-8 lg:inset-16 bg-black rounded-3xl md:rounded-[3rem] overflow-hidden"
-          style={{
-            boxShadow: `
-              inset 0 0 100px rgba(255,255,255,0.1),
-              inset 0 0 50px rgba(255,255,255,0.05),
-              0 0 100px rgba(0,0,0,0.8)
-            `
-          }}
+          className="absolute inset-0 bg-black overflow-hidden"
         >
           {/* Screen curvature effect */}
           <div 
@@ -356,7 +349,7 @@ export function TerminalProjectsGallery() {
                   <img 
                     src={currentProject.image} 
                     alt={currentProject.name}
-                    className="w-full h-full object-contain p-4"
+                    className="w-full h-full object-contain p-2"
                     onLoad={() => setImageLoading(false)}
                     style={{
                       filter: isGlitching 
