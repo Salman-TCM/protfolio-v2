@@ -12,7 +12,8 @@ import {
   CRTEffect,
   TerminalProgressBar,
   ASCIILoader,
-  TerminalWindowEffect
+  TerminalWindowEffect,
+  RETRO_THEMES
 } from './terminal-effects'
 import { 
   TerminalSoundSimulator, 
@@ -34,6 +35,7 @@ interface TerminalCommand {
 
 export function TerminalInterface() {
   const [showBootSequence, setShowBootSequence] = useState(true)
+  const [bootTheme, setBootTheme] = useState<keyof typeof RETRO_THEMES>('white') // Use white theme for black and white
   const [showTVNoise, setShowTVNoise] = useState(false)
   const [showMatrix, setShowMatrix] = useState(false)
   const [isHacking, setIsHacking] = useState(false)
@@ -486,10 +488,13 @@ Send me an email or reach out on social media!
       {/* Boot Sequence */}
       <AnimatePresence>
         {showBootSequence && (
-          <TerminalBootSequence onComplete={() => {
-            setShowBootSequence(false)
-            setTerminalReady(true)
-          }} />
+          <TerminalBootSequence 
+            theme={bootTheme}
+            onComplete={() => {
+              setShowBootSequence(false)
+              setTerminalReady(true)
+            }} 
+          />
         )}
       </AnimatePresence>
 
