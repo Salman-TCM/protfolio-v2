@@ -37,6 +37,9 @@ export function GlitchText({ children, isActive = false }: { children: string; i
   return <span>{children}</span>
 }
 
+// Import the pixel spark loader
+import { PixelSparkLoader } from './pixel-spark-loader'
+
 // Simple Terminal Boot Sequence
 export function TerminalBootSequence({ 
   onComplete, 
@@ -47,42 +50,28 @@ export function TerminalBootSequence({
   theme?: keyof typeof RETRO_THEMES;
   skip?: boolean;
 }) {
-  const [currentStep, setCurrentStep] = useState(0)
-  const [isComplete, setIsComplete] = useState(false)
+  const [isVisible, setIsVisible] = useState(true)
   const currentTheme = RETRO_THEMES[theme]
-
-  const bootSteps = [
-    "INITIALIZING SYSTEM...",
-    "LOADING TERMINAL...",
-    "CALIBRATING PHOSPHOR DISPLAY...",
-    "READY"
-  ]
 
   useEffect(() => {
     if (skip) {
-      setIsComplete(true)
+      setIsVisible(false)
       setTimeout(onComplete, 100)
       return
     }
 
-    if (currentStep < bootSteps.length - 1) {
-      const timer = setTimeout(() => {
-        setCurrentStep(prev => prev + 1)
-      }, 200 + Math.random() * 300)
-      return () => clearTimeout(timer)
-    } else {
-      const timer = setTimeout(() => {
-        setIsComplete(true)
-        setTimeout(onComplete, 1000)
-      }, 1000)
-      return () => clearTimeout(timer)
-    }
-  }, [currentStep, bootSteps.length, onComplete, skip])
+    const timer = setTimeout(() => {
+      setIsVisible(false)
+      setTimeout(onComplete, 500)
+    }, 3000) // Extended to show pixel-spark animation
+
+    return () => clearTimeout(timer)
+  }, [onComplete, skip])
 
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
       if (e.key === ' ' || e.key === 'Enter') {
-        setIsComplete(true)
+        setIsVisible(false)
         setTimeout(onComplete, 100)
       }
     }
@@ -91,118 +80,19 @@ export function TerminalBootSequence({
     return () => window.removeEventListener('keydown', handleKeyPress)
   }, [onComplete])
 
-  if (isComplete) return null
+  if (!isVisible) return null
 
   return (
-    <motion.div
-      className="fixed inset-0 bg-black z-50 flex items-center justify-center font-mono overflow-hidden"
-      exit={{ opacity: 0 }}
-      style={{ backgroundColor: currentTheme.background }}
-    >
-      {/* CRT Effect Overlay */}
-      <div 
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background: `repeating-linear-gradient(
-            0deg,
-            transparent,
-            transparent 2px,
-            ${currentTheme.scanline} 2px,
-            ${currentTheme.scanline} 4px
-          )`
-        }}
+    <div className="fixed inset-0 z-50">
+      <PixelSparkLoader
+        isVisible={isVisible}
+        onComplete={onComplete}
+        duration={3000}
+        theme={theme}
+        pixelCount={49} // 7x7 grid for clean terminal look
+        gridSize={10}
       />
-
-      {/* Screen flicker effect */}
-      <motion.div 
-        className="absolute inset-0 pointer-events-none"
-        animate={{ opacity: [0.95, 1, 0.98, 1] }}
-        transition={{ duration: 0.15, repeat: Infinity }}
-        style={{ backgroundColor: 'rgba(0, 0, 0, 0.02)' }}
-      />
-
-      <div className="max-w-4xl w-full px-8 relative z-10">
-        {/* Boot Messages */}
-        <div className="space-y-1">
-          {bootSteps.slice(0, currentStep + 1).map((step, index) => (
-            <motion.div
-              key={index}
-              className="text-sm flex items-center gap-2"
-              style={{ color: currentTheme.secondary }}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <span style={{ color: currentTheme.dim }}>{">"}</span>
-              <span className="flex-1">{step}</span>
-              {index === currentStep && !isComplete && (
-                <motion.span
-                  style={{ color: currentTheme.primary }}
-                  animate={{ opacity: [0, 1, 0] }}
-                  transition={{ duration: 0.8, repeat: Infinity }}
-                >
-                  █
-                </motion.span>
-              )}
-              {index < currentStep && (
-                <motion.span
-                  style={{ color: currentTheme.primary }}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.2 }}
-                >
-                  ✓
-                </motion.span>
-              )}
-            </motion.div>
-          ))}
-        </div>
-
-        {/* Progress Bar */}
-        {currentStep > 2 && currentStep < bootSteps.length - 1 && (
-          <motion.div
-            className="mt-6"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
-            <div 
-              className="h-2 border rounded-sm overflow-hidden"
-              style={{ borderColor: currentTheme.primary }}
-            >
-              <motion.div
-                className="h-full rounded-sm"
-                style={{ 
-                  backgroundColor: currentTheme.primary,
-                  boxShadow: `0 0 10px ${currentTheme.glow}`
-                }}
-                initial={{ width: 0 }}
-                animate={{ width: `${(currentStep / (bootSteps.length - 1)) * 100}%` }}
-                transition={{ duration: 0.5 }}
-              />
-            </div>
-            <div 
-              className="text-xs mt-2 text-center"
-              style={{ color: currentTheme.dim }}
-            >
-              {Math.round((currentStep / (bootSteps.length - 1)) * 100)}%
-            </div>
-          </motion.div>
-        )}
-
-        {/* Skip hint */}
-        {currentStep > 0 && !isComplete && (
-          <motion.div
-            className="text-center mt-8 text-xs opacity-60"
-            style={{ color: currentTheme.dim }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 0.6 }}
-            transition={{ delay: 1 }}
-          >
-            Press SPACE or ENTER to skip
-          </motion.div>
-        )}
-      </div>
-    </motion.div>
+    </div>
   )
 }
 

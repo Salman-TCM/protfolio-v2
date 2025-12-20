@@ -15,7 +15,11 @@ import {
   Zap,
   Database,
   Server,
-  MousePointer
+  MousePointer,
+  Monitor,
+  Cpu,
+  Wifi,
+  Activity
 } from "lucide-react"
 
 const PROJECTS = [
@@ -136,8 +140,8 @@ export function TerminalProjectsGallery() {
   const [showFullDetails, setShowFullDetails] = useState(false)
   const [imageLoading, setImageLoading] = useState(true)
   const containerRef = useRef<HTMLDivElement>(null)
-  const scrollTimeoutRef = useRef<NodeJS.Timeout>()
-  const touchStartY = useRef<number>(0)
+  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const touchStartY = useRef(0)
 
   const currentProject = PROJECTS[currentProjectIndex]
 
@@ -174,7 +178,7 @@ export function TerminalProjectsGallery() {
     const diff = touchStartY.current - currentTouchY
 
     // Provide immediate visual feedback for swipe direction
-    if (Math.abs(diff) > 10) {
+    if (Math.abs(diff) > 15) {
       e.preventDefault() // Prevent page scroll when swiping
     }
   }
@@ -185,8 +189,8 @@ export function TerminalProjectsGallery() {
     const touchEndY = e.changedTouches[0].clientY
     const diff = touchStartY.current - touchEndY
 
-    // Reduced threshold for easier mobile scrolling
-    if (Math.abs(diff) > 30) {
+    // Even lower threshold for much easier mobile scrolling
+    if (Math.abs(diff) > 20) {
       setIsGlitching(true)
       setTimeout(() => {
         if (diff > 0 && currentProjectIndex < PROJECTS.length - 1) {
@@ -195,7 +199,7 @@ export function TerminalProjectsGallery() {
           setCurrentProjectIndex(prev => prev - 1)
         }
         setIsGlitching(false)
-      }, 100)
+      }, 150)
     }
   }
 
@@ -391,6 +395,26 @@ export function TerminalProjectsGallery() {
                     </motion.div>
                   )}
 
+                  {/* Mobile Swipe Hint */}
+                  {!imageLoading && !showProjectInfo && (
+                    <motion.div 
+                      className="absolute bottom-20 left-0 right-0 flex justify-center"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 2, duration: 0.5 }}
+                    >
+                      <div className="bg-black/80 border border-white/20 px-4 py-2 text-white/70 text-xs font-mono rounded-full backdrop-blur-sm">
+                        <div className="flex items-center gap-2">
+                          <span>SWIPE UP/DOWN TO NAVIGATE</span>
+                          <div className="flex flex-col gap-1">
+                            <ChevronUp className="w-3 h-3" />
+                            <ChevronDown className="w-3 h-3" />
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+
                   {/* Minimal Project Title - Bottom */}
                   {!showProjectInfo && !imageLoading && (
                     <motion.div 
@@ -433,129 +457,218 @@ export function TerminalProjectsGallery() {
                       </button>
 
                       <div className="max-w-4xl mx-auto">
-                        {/* Project Header */}
-                        <motion.div
-                          initial={{ y: 20, opacity: 0 }}
-                          animate={{ y: 0, opacity: 1 }}
-                          transition={{ delay: 0.1 }}
-                          className="mb-8"
-                        >
-                          <div className="flex items-center gap-3 mb-4">
+                      {/* Retro Terminal Header */}
+                      <motion.div
+                        initial={{ y: 20, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{ delay: 0.1 }}
+                        className="mb-8"
+                      >
+                        {/* Terminal Window Bar */}
+                        <div className="bg-black border border-white/30 rounded-t-lg p-3 mb-4">
+                          <div className="flex items-center gap-2">
+                            <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                            <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                            <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                            <div className="flex-1 text-center">
+                              <span className="text-white/70 text-xs font-mono">PROJECT_TERMINAL_v2.0</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Project Status Bar */}
+                        <div className="bg-black/50 border border-white/20 rounded-lg p-4 mb-4">
+                          <div className="flex flex-wrap items-center gap-3 font-mono text-sm">
+                            <div className="flex items-center gap-2">
+                              <Monitor className="w-4 h-4 text-green-400" />
+                              <span className="text-green-400">SYSTEM_ONLINE</span>
+                            </div>
                             <div className="flex items-center gap-2">
                               {getTypeIcon(currentProject.type)}
-                              <span className="text-white/50 text-sm font-mono">{currentProject.type}</span>
+                              <span className="text-white/50">{currentProject.type}</span>
                             </div>
-                            <div className={`text-xs px-3 py-1 border font-mono ${
+                            <div className={`px-3 py-1 border ${
                               currentProject.status === 'ACTIVE' || currentProject.status === 'LIVE' 
-                                ? 'border-white text-white animate-pulse' 
-                                : 'border-white/50 text-white/70'
+                                ? 'border-green-400 text-green-400 animate-pulse' 
+                                : 'border-yellow-400 text-yellow-400'
                             }`}>
                               [{currentProject.status}]
                             </div>
+                            <div className="flex items-center gap-2">
+                              <Activity className="w-4 h-4 text-blue-400" />
+                              <span className="text-blue-400">ACTIVE</span>
+                            </div>
                           </div>
-                          <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white font-mono mb-4">
+                        </div>
+
+                        {/* Project Title with ASCII Art */}
+                        <div className="bg-black/30 border-l-4 border-cyan-400 pl-4 py-2">
+                          <pre className="text-cyan-400 font-mono text-xs mb-2">
+╔══════════════════════════════════════════════════════════════╗
+║  PROJECT_ID: {currentProject.id.toString().padStart(2, '0')}                                      ║
+║  ACCESS_LEVEL: ADMIN                                         ║
+║  TIMESTAMP: {new Date().toISOString().split('T')[1].split('.')[0]}    ║
+╚══════════════════════════════════════════════════════════════╝
+                          </pre>
+                          <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white font-mono tracking-wider">
                             {currentProject.name}
                           </h1>
-                        </motion.div>
+                        </div>
+                      </motion.div>
 
-                        {/* Tech Stack */}
+                        {/* Tech Stack - Retro Terminal Style */}
                         <motion.div
                           initial={{ y: 20, opacity: 0 }}
                           animate={{ y: 0, opacity: 1 }}
                           transition={{ delay: 0.2 }}
                           className="mb-8"
                         >
-                          <div className="text-white/50 text-sm font-mono mb-3">// TECH STACK</div>
-                          <div className="flex flex-wrap gap-2">
-                            {currentProject.tech.map((tech, index) => (
-                              <span 
-                                key={index}
-                                className="text-sm px-3 py-1 border border-white/30 text-white/80 hover:border-white hover:text-white transition-colors font-mono"
-                              >
-                                {tech}
-                              </span>
-                            ))}
+                          <div className="bg-black/40 border border-green-400/30 rounded-lg p-4">
+                            <div className="flex items-center gap-2 mb-3">
+                              <Cpu className="w-4 h-4 text-green-400" />
+                              <span className="text-green-400 text-sm font-mono">$ cat tech_stack.json</span>
+                            </div>
+                            <div className="bg-black/60 border border-white/20 rounded p-3 font-mono text-xs">
+                              <div className="text-green-400 mb-2">{"{"}</div>
+                              <div className="flex flex-wrap gap-2 ml-4">
+                                {currentProject.tech.map((tech, index) => (
+                                  <div key={index} className="flex items-center gap-2">
+                                    <span className="text-cyan-400">"tech_{index + 1}":</span>
+                                    <span className="text-yellow-400">"{tech}"</span>
+                                    {index < currentProject.tech.length - 1 && <span className="text-white/50">,</span>}
+                                  </div>
+                                ))}
+                              </div>
+                              <div className="text-green-400 mt-2">{"}"}</div>
+                            </div>
                           </div>
                         </motion.div>
 
-                        {/* Description */}
+                        {/* Description - Terminal Output Style */}
                         <motion.div
                           initial={{ y: 20, opacity: 0 }}
                           animate={{ y: 0, opacity: 1 }}
                           transition={{ delay: 0.3 }}
                           className="mb-8"
                         >
-                          <div className="text-white/50 text-sm font-mono mb-3">// DESCRIPTION</div>
-                          <AnimatePresence mode="wait">
-                            {showFullDetails ? (
-                              <motion.div
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                exit={{ opacity: 0 }}
-                              >
-                                <p className="text-white/90 text-base leading-relaxed mb-6 font-mono">
-                                  {currentProject.fullDescription}
-                                </p>
-                                
-                                {/* Highlights */}
-                                <div>
-                                  <div className="text-white/50 text-sm font-mono mb-3">// KEY HIGHLIGHTS</div>
-                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                    {currentProject.highlights.map((highlight, index) => (
-                                      <div key={index} className="flex items-start gap-2">
-                                        <span className="text-white/50 mt-1">▸</span>
-                                        <span className="text-white/80 text-sm font-mono">{highlight}</span>
-                                      </div>
-                                    ))}
-                                  </div>
-                                </div>
-                              </motion.div>
-                            ) : (
-                              <motion.p
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                exit={{ opacity: 0 }}
-                                className="text-white/80 text-base font-mono"
-                              >
-                                {currentProject.description}
-                              </motion.p>
-                            )}
-                          </AnimatePresence>
+                          <div className="bg-black/40 border border-blue-400/30 rounded-lg p-4">
+                            <div className="flex items-center gap-2 mb-3">
+                              <Terminal className="w-4 h-4 text-blue-400" />
+                              <span className="text-blue-400 text-sm font-mono">$ ./project_info --detail={showFullDetails ? 'full' : 'brief'}</span>
+                            </div>
+                            <div className="bg-black/60 border border-white/20 rounded p-4 font-mono text-sm">
+                              <AnimatePresence mode="wait">
+                                {showFullDetails ? (
+                                  <motion.div
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    exit={{ opacity: 0 }}
+                                  >
+                                    <div className="text-green-400 mb-2">$ echo "FULL_DESCRIPTION"</div>
+                                    <p className="text-white/90 leading-relaxed mb-6 pl-4 border-l-2 border-cyan-400">
+                                      {currentProject.fullDescription}
+                                    </p>
+                                    
+                                    {/* Highlights - Terminal Style */}
+                                    <div className="text-green-400 mb-2">$ ./get_highlights.sh</div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                      {currentProject.highlights.map((highlight, index) => (
+                                        <div key={index} className="flex items-start gap-2 text-yellow-300">
+                                          <span className="text-green-400">$ [{index + 1}]</span>
+                                          <span className="text-white/80">{highlight}</span>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </motion.div>
+                                ) : (
+                                  <motion.div
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    exit={{ opacity: 0 }}
+                                  >
+                                    <div className="text-green-400 mb-2">$ echo "BRIEF_DESCRIPTION"</div>
+                                    <p className="text-white/80 pl-4 border-l-2 border-blue-400">
+                                      {currentProject.description}
+                                    </p>
+                                  </motion.div>
+                                )}
+                              </AnimatePresence>
+                            </div>
+                          </div>
                         </motion.div>
 
-                        {/* Action Buttons */}
+                        {/* Action Buttons - Retro Terminal Style */}
                         <motion.div
                           initial={{ y: 20, opacity: 0 }}
                           animate={{ y: 0, opacity: 1 }}
                           transition={{ delay: 0.4 }}
-                          className="flex flex-wrap gap-3"
+                          className="space-y-4"
                         >
-                          {currentProject.url && (
-                            <a 
-                              href={currentProject.url} 
-                              target="_blank" 
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center gap-2 text-white text-sm border border-white/50 px-4 py-2 hover:bg-white hover:text-black transition-all font-mono"
-                            >
-                              <Globe className="w-4 h-4" /> VIEW LIVE DEMO
-                            </a>
-                          )}
-                          {currentProject.github && (
-                            <a 
-                              href={currentProject.github} 
-                              target="_blank" 
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center gap-2 text-white text-sm border border-white/50 px-4 py-2 hover:bg-white hover:text-black transition-all font-mono"
-                            >
-                              <Github className="w-4 h-4" /> VIEW SOURCE
-                            </a>
-                          )}
-                          <button
-                            onClick={() => setShowFullDetails(!showFullDetails)}
-                            className="inline-flex items-center gap-2 text-white text-sm border border-white/50 px-4 py-2 hover:bg-white hover:text-black transition-all font-mono"
-                          >
-                            {showFullDetails ? 'LESS INFO' : 'MORE INFO'}
-                          </button>
+                          {/* Terminal Command Prompt */}
+                          <div className="bg-black/40 border border-purple-400/30 rounded-lg p-4">
+                            <div className="flex items-center gap-2 mb-3">
+                              <Wifi className="w-4 h-4 text-purple-400" />
+                              <span className="text-purple-400 text-sm font-mono">$ ./execute_actions.sh</span>
+                            </div>
+                            <div className="space-y-2">
+                              {currentProject.url && (
+                                <a 
+                                  href={currentProject.url} 
+                                  target="_blank" 
+                                  rel="noopener noreferrer"
+                                  className="group flex items-center gap-3 bg-black/60 border border-green-400/30 rounded p-3 hover:border-green-400 hover:bg-green-400/10 transition-all font-mono text-sm"
+                                >
+                                  <div className="flex items-center gap-2">
+                                    <Globe className="w-4 h-4 text-green-400 group-hover:text-green-300" />
+                                    <span className="text-green-400">$</span>
+                                  </div>
+                                  <span className="text-green-300 group-hover:text-green-200">open live_demo.url</span>
+                                  <span className="text-green-400 animate-pulse">_</span>
+                                </a>
+                              )}
+                              {currentProject.github && (
+                                <a 
+                                  href={currentProject.github} 
+                                  target="_blank" 
+                                  rel="noopener noreferrer"
+                                  className="group flex items-center gap-3 bg-black/60 border border-blue-400/30 rounded p-3 hover:border-blue-400 hover:bg-blue-400/10 transition-all font-mono text-sm"
+                                >
+                                  <div className="flex items-center gap-2">
+                                    <Github className="w-4 h-4 text-blue-400 group-hover:text-blue-300" />
+                                    <span className="text-blue-400">$</span>
+                                  </div>
+                                  <span className="text-blue-300 group-hover:text-blue-200">git clone source_repo.git</span>
+                                  <span className="text-blue-400 animate-pulse">_</span>
+                                </a>
+                              )}
+                              <button
+                                onClick={() => setShowFullDetails(!showFullDetails)}
+                                className="group w-full flex items-center gap-3 bg-black/60 border border-yellow-400/30 rounded p-3 hover:border-yellow-400 hover:bg-yellow-400/10 transition-all font-mono text-sm"
+                              >
+                                <div className="flex items-center gap-2">
+                                  <Terminal className="w-4 h-4 text-yellow-400 group-hover:text-yellow-300" />
+                                  <span className="text-yellow-400">$</span>
+                                </div>
+                                <span className="text-yellow-300 group-hover:text-yellow-200">
+                                  {showFullDetails ? 'hide_details --brief' : 'show_details --full'}
+                                </span>
+                                <span className="text-yellow-400 animate-pulse">_</span>
+                              </button>
+                            </div>
+                          </div>
+
+                          {/* System Status */}
+                          <div className="bg-black/40 border border-cyan-400/30 rounded-lg p-3">
+                            <div className="flex items-center justify-between text-xs font-mono">
+                              <div className="flex items-center gap-2">
+                                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                                <span className="text-green-400">SYSTEM_READY</span>
+                              </div>
+                              <div className="text-cyan-400">
+                                ACTIONS_LOADED: {currentProject.url ? (currentProject.github ? 3 : 2) : (currentProject.github ? 2 : 1)}
+                              </div>
+                            </div>
+                          </div>
                         </motion.div>
 
                         {/* Keyboard Hint */}
@@ -575,40 +688,48 @@ export function TerminalProjectsGallery() {
                 )}
               </AnimatePresence>
 
-              {/* Simple Navigation Bar - Bottom */}
+              {/* Enhanced Navigation Bar - Bottom */}
               <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-30">
-                <div className="flex items-center bg-black/80 backdrop-blur-sm rounded-full border border-white/20">
+                <div className="flex items-center bg-black/80 backdrop-blur-sm rounded-full border border-white/20 px-4 py-2">
                   <button 
                     onClick={() => navigateToProject(currentProjectIndex - 1)}
                     disabled={currentProjectIndex === 0}
-                    className={`text-xs font-mono ${
+                    className={`text-xs font-mono p-1 rounded ${
                       currentProjectIndex === 0 
                         ? 'text-white/30 cursor-not-allowed' 
-                        : 'text-white hover:text-white/70 transition-colors'
+                        : 'text-white hover:text-white/70 transition-colors hover:bg-white/10'
                     }`}
                   >
                     <ChevronUp className="w-4 h-4" />
                   </button>
                   
-                  {/* Simple dots indicator */}
-                  <div className="flex gap-1">
-                    {PROJECTS.map((_, index) => (
-                      <div
-                        key={index}
-                        className={`w-2 h-2 rounded-full transition-all ${
-                          index === currentProjectIndex ? 'bg-white' : 'bg-white/30'
-                        }`}
-                      />
-                    ))}
+                  {/* Enhanced dots indicator with progress */}
+                  <div className="flex items-center gap-2 mx-3">
+                    <div className="flex gap-1">
+                      {PROJECTS.map((_, index) => (
+                        <div
+                          key={index}
+                          className={`w-2 h-2 rounded-full transition-all ${
+                            index === currentProjectIndex 
+                              ? 'bg-white scale-125' 
+                              : 'bg-white/30 hover:bg-white/50'
+                          }`}
+                        />
+                      ))}
+                    </div>
+                    {/* Project counter */}
+                    <span className="text-white/60 text-xs font-mono">
+                      {currentProjectIndex + 1}/{PROJECTS.length}
+                    </span>
                   </div>
                   
                   <button 
                     onClick={() => navigateToProject(currentProjectIndex + 1)}
                     disabled={currentProjectIndex === PROJECTS.length - 1}
-                    className={`text-xs font-mono ${
+                    className={`text-xs font-mono p-1 rounded ${
                       currentProjectIndex === PROJECTS.length - 1 
                         ? 'text-white/30 cursor-not-allowed' 
-                        : 'text-white hover:text-white/70 transition-colors'
+                        : 'text-white hover:text-white/70 transition-colors hover:bg-white/10'
                     }`}
                   >
                     <ChevronDown className="w-4 h-4" />
