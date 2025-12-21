@@ -7,11 +7,9 @@ import { TVNoise, MatrixRain } from './tv-noise'
 import { 
   GlitchText, 
   TerminalBootSequence, 
-  useTypingEffect, 
   TerminalScanLines,
   CRTEffect,
   TerminalProgressBar,
-  ASCIILoader,
   TerminalWindowEffect,
   RETRO_THEMES
 } from './terminal-effects'
@@ -32,22 +30,18 @@ interface TerminalCommand {
   timestamp: string
 }
 
-
 export function TerminalInterface() {
   const [showBootSequence, setShowBootSequence] = useState(true)
-  const [bootTheme, setBootTheme] = useState<keyof typeof RETRO_THEMES>('white') // Use white theme for black and white
+  const [bootTheme, setBootTheme] = useState<keyof typeof RETRO_THEMES>('white')
   const [showTVNoise, setShowTVNoise] = useState(false)
   const [showMatrix, setShowMatrix] = useState(false)
   const [isHacking, setIsHacking] = useState(false)
   const [terminalReady, setTerminalReady] = useState(false)
-  const [showSoundVisualizer, setShowSoundVisualizer] = useState(false)
   const [isTyping, setIsTyping] = useState(false)
-  const [currentTheme] = useState('green')
   const [input, setInput] = useState("")
   const [currentSection, setCurrentSection] = useState("home")
   const terminalEndRef = useRef<HTMLDivElement>(null)
 
-  // Execute command function
   const executeCommand = (cmd: string) => {
     const trimmed = cmd.toLowerCase().trim()
     let output: string | React.ReactNode = ""
@@ -67,10 +61,9 @@ export function TerminalInterface() {
       output = contentData.about.content
       newSection = "about"
     } else if (trimmed === "projects") {
-      // Show project gallery inside terminal
       setShowTVNoise(true)
-      setCommands(prev => prev.filter(c => c.id !== "0")) // Remove welcome message
-      output = `$ Loading projects gallery...`
+      setCommands(prev => prev.filter(c => c.id !== "0"))
+      output = "$ Loading projects gallery..."
       
       setTimeout(() => {
         setShowTVNoise(false)
@@ -99,18 +92,63 @@ export function TerminalInterface() {
       output = contentData.home.content
       newSection = "home"
     } else if (trimmed === "back") {
-      // Go back to home
       output = contentData.home.content
       newSection = "home"
     } else if (trimmed.startsWith("view ")) {
-      // View command now opens gallery  
-      output = `Use 'projects' command to view project gallery`
+      output = "Use 'projects' command to view project gallery"
     } else if (trimmed.startsWith("blog ")) {
-      const num = trimmed.split(" ")[1]
-      output = `Loading blog post ${num}...\n\n[This would show full blog content]`
+      const num = parseInt(trimmed.split(" ")[1])
+      if (num >= 1 && num <= 3) {
+        const blogPosts = [
+          {
+            title: "Building Scalable React Applications",
+            date: "November 15, 2025",
+            readTime: "8 min",
+            tags: ["React", "Performance", "Architecture"],
+            content: "# Building Scalable React Applications\n\n## Introduction\n\nIn today's fast-paced development environment, building scalable React applications is crucial for long-term success.\n\n## Key Principles\n\n### 1. Component Composition\n- Keep components small and focused\n- Use composition over inheritance\n\n### 2. State Management\n- Choose the right state management solution\n- Implement proper data flow\n\n### 3. Performance Optimization\n- Use React.memo and useMemo strategically\n- Implement code splitting\n\n## Best Practices\n\n• Implement proper error boundaries\n• Use TypeScript for type safety\n• Write comprehensive tests\n• Follow accessibility guidelines\n\n---\n*Published on November 15, 2025*"
+          },
+          {
+            title: "Next.js 16 Features You Should Know",
+            date: "November 10, 2025",
+            readTime: "12 min",
+            tags: ["Next.js", "Web Development", "Tips"],
+            content: "# Next.js 16 Features You Should Know\n\n## Overview\n\nNext.js 16 brings exciting new features that enhance developer experience and application performance.\n\n## New Features\n\n### 1. App Router Improvements\n- Enhanced route groups\n- Improved parallel routes\n\n### 2. Performance Enhancements\n- Faster builds with Turbopack\n- Improved bundle analysis\n\n### 3. Developer Experience\n- Better error messages\n- Improved hot reload\n\n---\n*Published on November 10, 2025*"
+          },
+          {
+            title: "Mastering TypeScript Types",
+            date: "November 5, 2025",
+            readTime: "10 min",
+            tags: ["TypeScript", "Programming", "Best Practices"],
+            content: "# Mastering TypeScript Types\n\n## Advanced Type Concepts\n\nTypeScript's type system is one of its most powerful features.\n\n## Generics and Constraints\n\n### Understanding Generics\nGenerics allow you to write reusable, type-safe code.\n\n### Type Constraints\nRestrict generics to specific types.\n\n## Utility Types\n\n### Common Utility Types\n- Partial<T> - Makes all properties optional\n- Required<T> - Makes all properties required\n- Pick<T, K> - Select specific properties\n- Omit<T, K> - Remove specific properties\n\n---\n*Published on November 5, 2025*"
+          }
+        ]
+        const post = blogPosts[num - 1]
+        output = (
+          <div className="space-y-4 text-white">
+            <div className="border-b border-white/20 pb-4">
+              <h2 className="text-xl font-bold text-white mb-2">{post.title}</h2>
+              <div className="flex flex-wrap gap-2 text-xs text-white/70">
+                <span>📅 {post.date}</span>
+                <span>⏱️ {post.readTime} read</span>
+                {post.tags.map(tag => (
+                  <span key={tag} className="px-2 py-1 bg-white/10 rounded">#{tag}</span>
+                ))}
+              </div>
+            </div>
+            <div className="whitespace-pre-wrap font-mono text-sm leading-relaxed">
+              {post.content}
+            </div>
+            <div className="border-t border-white/20 pt-4 text-xs text-white/50">
+              Type 'blog' to return to post list
+            </div>
+          </div>
+        )
+      } else {
+        output = `Blog post ${num} not found. Available posts: 1-3`
+      }
     } else if (trimmed === "matrix") {
       setShowMatrix(true)
-      output = `$ Entering matrix...`
+      output = "$ Entering matrix..."
       setTimeout(() => setShowMatrix(false), 5000)
     } else if (trimmed === "hack") {
       setIsHacking(true)
@@ -163,22 +201,13 @@ export function TerminalInterface() {
         </div>
       )
     } else if (trimmed === "whoami") {
-      output = `visitor@portfolio-terminal\nYou are browsing Salman's portfolio`
+      output = "visitor@portfolio-terminal\nYou are browsing Salman's portfolio"
     } else if (trimmed === "pwd") {
-      output = `/home/visitor/portfolio`
+      output = "/home/visitor/portfolio"
     } else if (trimmed === "ls") {
-      output = `about.md  blog/  contact.txt  projects/  skills.json  README.md`
+      output = "about.md  blog/  contact.txt  projects/  skills.json  README.md"
     } else if (trimmed === "cat readme") {
-      output = `# Salman's Portfolio Terminal
-      
-Welcome to my interactive terminal portfolio!
-
-This terminal simulates a real command-line interface
-where you can explore my projects, skills, and background.
-
-Type "help" for available commands.
-
-Made with ❤️ using Next.js and React`
+      output = "# Salman's Portfolio Terminal\n\nWelcome to my interactive terminal portfolio!\n\nThis terminal simulates a real command-line interface\nwhere you can explore my projects, skills, and background.\n\nType 'help' for available commands.\n\nMade with ❤️ using Next.js and React"
     } else if (trimmed === "ps") {
       output = (
         <div className="space-y-1 text-white font-mono text-sm">
@@ -204,10 +233,9 @@ Made with ❤️ using Next.js and React`
         </div>
       )
     } else if (trimmed === "gallery") {
-      // Same as projects command
       setShowTVNoise(true)
       setCommands(prev => prev.filter(c => c.id !== "0"))
-      output = `$ Loading projects gallery...`
+      output = "$ Loading projects gallery..."
       
       setTimeout(() => {
         setShowTVNoise(false)
@@ -224,7 +252,7 @@ Made with ❤️ using Next.js and React`
       }, 1500)
     } else if (trimmed === "static" || trimmed === "tv") {
       setShowTVNoise(true)
-      output = `$ Generating TV static...`
+      output = "$ Generating TV static..."
       setTimeout(() => setShowTVNoise(false), 3000)
     } else {
       output = `Command not found: ${trimmed}\nType "help" for available commands`
@@ -274,7 +302,6 @@ Made with ❤️ using Next.js and React`
           </motion.div>
         </div>
       ),
-      // leave timestamp empty on initial server render to avoid SSR/client hydration mismatch
       timestamp: "",
     },
   ])
@@ -290,171 +317,27 @@ Made with ❤️ using Next.js and React`
   const contentData = {
     home: {
       title: "HOME",
-      content: `
-System: Retro Developer Portfolio v1.0
-User: visitor@terminal
-Location: ~/portfolio
-
-Available sections:
-  • about      - Learn about me
-  • projects   - View my projects
-  • gallery    - Open retro project viewer
-  • blog       - Read blog posts
-  • contact    - Get in touch
-  • skills     - View my skills
-  • view [#]   - View project [#] live
-  
-System commands:
-  • clear      - Clear terminal
-  • help       - Show this help menu
-  • status     - System status
-  • time       - Current time
-  • scan       - Network scan
-  • weather    - Weather info
-  • whoami     - User info
-  • pwd        - Current directory
-  • ls         - List files
-  • ps         - Running processes
-  • neofetch   - System info
-  
-Fun commands:
-  • matrix     - Enter the matrix
-  • hack       - Start hacking sequence
-  • glitch     - Glitch the system
-  • static     - Generate TV static
-  • gallery    - Full-screen retro project viewer
-  • cat readme - Read README file
-      `,
+      content: "System: Retro Developer Portfolio v1.0\nUser: visitor@terminal\nLocation: ~/portfolio\n\nAvailable sections:\n  • about      - Learn about me\n  • projects   - View my projects\n  • gallery    - Open retro project viewer\n  • blog       - Read blog posts\n  • contact    - Get in touch\n  • skills     - View my skills\n  • view [#]   - View project [#] live\n  \nSystem commands:\n  • clear      - Clear terminal\n  • help       - Show this help menu\n  • status     - System status\n  • time       - Current time\n  • scan       - Network scan\n  • weather    - Weather info\n  • whoami     - User info\n  • pwd        - Current directory\n  • ls         - List files\n  • ps         - Running processes\n  • neofetch   - System info\n  \nFun commands:\n  • matrix     - Enter the matrix\n  • hack       - Start hacking sequence\n  • glitch     - Glitch the system\n  • static     - Generate TV static\n  • gallery    - Full-screen retro project viewer\n  • cat readme - Read README file",
     },
     about: {
       title: "ABOUT ME",
-      content: `
-┌──────────────────────────────────────┐
-│        ABOUT ME - PROFILE             │
-└──────────────────────────────────────┘
-
-Name: Md. Salman Hossain
-Role: Software Engineer
-Experience: 3+ years
-
-Bio:
-Software Engineer at Technometrics Ltd with expertise in AI/ML, NLP, and full-stack development.
-Specialized in building scalable web scraping solutions, RESTful APIs, and advanced NLP classification systems.
-Experienced in Python, Django, FastAPI, React, and modern cloud technologies.
-
-Education:
-• Bachelor of Science in Computer Science
-• East West University, Dhaka, Bangladesh (Feb 2023)
-
-Contact: +880 1521102041 | salmann.hossain@gmail.com
-Portfolio: linkedin.com/salman | github.com/Salman-TCM | leetcode.com/SalmanTCM
-      `,
+      content: "┌──────────────────────────────────────┐\n│        ABOUT ME - PROFILE             │\n└──────────────────────────────────────┘\n\nName: Md. Salman Hossain\nRole: Software Engineer\nExperience: 3+ years\n\nBio:\nSoftware Engineer at Technometrics Ltd with expertise in AI/ML, NLP, and full-stack development.\nSpecialized in building scalable web scraping solutions, RESTful APIs, and advanced NLP classification systems.\nExperienced in Python, Django, FastAPI, React, and modern cloud technologies.\n\nEducation:\n• Bachelor of Science in Computer Science\n• East West University, Dhaka, Bangladesh (Feb 2023)\n\nContact: +880 1521102041 | salmann.hossain@gmail.com\nPortfolio: linkedin.com/salman | github.com/Salman-TCM | leetcode.com/SalmanTCM",
     },
     projects: {
       title: "PROJECTS",
-      content: `Launching retro project viewer with full-screen gallery...
-      
-Use arrow keys or scroll to navigate between projects
-Press ESC or click [EXIT] to return to terminal
-      
-Features:
-• CRT scanlines and VHS glitch effects
-• Smooth media transitions
-• Touch/swipe support on mobile
-• Full-screen project galleries
-• Live site links for available projects
-    `,
+      content: "Launching retro project viewer with full-screen gallery...\n      \nUse arrow keys or scroll to navigate between projects\nPress ESC or click [EXIT] to return to terminal\n      \nFeatures:\n• CRT scanlines and VHS glitch effects\n• Smooth media transitions\n• Touch/swipe support on mobile\n• Full-screen project galleries\n• Live site links for available projects",
     },
     blog: {
       title: "BLOG",
-      content: `
-┌──────────────────────────────────────┐
-│          LATEST BLOG POSTS            │
-└──────────────────────────────────────┘
-
-[1] Building Scalable React Applications
-    Date: Nov 15, 2025 | Read time: 8 min
-    Tags: React, Performance, Architecture
-    
-[2] Next.js 16 Features You Should Know
-    Date: Nov 10, 2025 | Read time: 12 min
-    Tags: Next.js, Web Development, Tips
-    
-[3] Mastering TypeScript Types
-    Date: Nov 5, 2025 | Read time: 10 min
-    Tags: TypeScript, Programming, Best Practices
-    
-[4] The Future of Web Development
-    Date: Oct 30, 2025 | Read time: 6 min
-    Tags: Trends, Web3, AI
-    
-[5] Docker for Frontend Developers
-    Date: Oct 25, 2025 | Read time: 7 min
-    Tags: Docker, DevOps, Development
-
-Type "blog [number]" to read full post
-Type "blog list" for all posts
-      `,
+      content: "┌──────────────────────────────────────┐\n│          LATEST BLOG POSTS            │\n└──────────────────────────────────────┘\n\n[1] Building Scalable React Applications\n    Date: Nov 15, 2025 | Read time: 8 min\n    Tags: React, Performance, Architecture\n    \n[2] Next.js 16 Features You Should Know\n    Date: Nov 10, 2025 | Read time: 12 min\n    Tags: Next.js, Web Development, Tips\n    \n[3] Mastering TypeScript Types\n    Date: Nov 5, 2025 | Read time: 10 min\n    Tags: TypeScript, Programming, Best Practices\n    \nType \"blog [number]\" to read full post\nType \"blog list\" for all posts",
     },
     skills: {
       title: "SKILLS & EXPERTISE",
-      content: `
-┌──────────────────────────────────────┐
-│        TECHNICAL SKILLS               │
-└──────────────────────────────────────┘
-
-Languages:
-  • Python | JavaScript | SQL | Bash | HTML/CSS
-
-Frameworks & Libraries:
-  • FastAPI | Django | Laravel | React | React Native | LangChain
-
-Machine Learning & NLP:
-  • Transformers (Hugging Face) | TensorFlow | spaCy | NLTK | LLM integration | Sentiment Analysis | NER
-
-Databases & Storage:
-  • MongoDB | MySQL | PostgreSQL | MinIO
-
-Search & Indexing:
-  • Elasticsearch | Monstache
-
-Task Queue & Caching:
-  • Celery | Redis
-
-DevOps & Tools:
-  • Docker | Kubernetes | Git | GitHub Actions | NGINX | CI/CD
-
-Cloud & Platforms:
-  • AWS (EC2, S3, IAM) | DigitalOcean
-
-Soft Skills:
-  • Problem Solving | Team Collaboration | Technical Documentation
-      `,
+      content: "┌──────────────────────────────────────┐\n│        TECHNICAL SKILLS               │\n└──────────────────────────────────────┘\n\nLanguages:\n  • Python | JavaScript | SQL | Bash | HTML/CSS\n\nFrameworks & Libraries:\n  • FastAPI | Django | Laravel | React | React Native | LangChain\n\nMachine Learning & NLP:\n  • Transformers (Hugging Face) | TensorFlow | spaCy | NLTK | LLM integration | Sentiment Analysis | NER\n\nDatabases & Storage:\n  • MongoDB | MySQL | PostgreSQL | MinIO\n\nSearch & Indexing:\n  • Elasticsearch | Monstache\n\nTask Queue & Caching:\n  • Celery | Redis\n\nDevOps & Tools:\n  • Docker | Kubernetes | Git | GitHub Actions | NGINX | CI/CD\n\nCloud & Platforms:\n  • AWS (EC2, S3, IAM) | DigitalOcean\n\nSoft Skills:\n  • Problem Solving | Team Collaboration | Technical Documentation",
     },
     contact: {
       title: "CONTACT & SOCIAL",
-      content: `
-┌──────────────────────────────────────┐
-│         CONTACT INFORMATION           │
-└──────────────────────────────────────┘
-
-Email: salmann.hossain@gmail.com
-Phone: +880 1521102041
-Location: Dhaka, Bangladesh
-
-Social Links:
-  • GitHub: github.com/Salman-TCM
-  • LinkedIn: linkedin.com/salman
-  • LeetCode: leetcode.com/SalmanTCM
-
-Available for:
-  ✓ Freelance Projects
-  ✓ Full-time Opportunities
-  ✓ Consulting
-  ✓ Speaking Engagements
-
-Send me an email or reach out on social media!
-      `,
+      content: "┌──────────────────────────────────────┐\n│         CONTACT INFORMATION           │\n└──────────────────────────────────────┘\n\nEmail: salmann.hossain@gmail.com\nPhone: +880 1521102041\nLocation: Dhaka, Bangladesh\n\nSocial Links:\n  • GitHub: github.com/Salman-TCM\n  • LinkedIn: linkedin.com/salman\n  • LeetCode: leetcode.com/SalmanTCM\n\nAvailable for:\n  ✓ Freelance Projects\n  ✓ Full-time Opportunities\n  ✓ Consulting\n  ✓ Speaking Engagements\n\nSend me an email or reach out on social media!",
     },
   }
 
@@ -468,24 +351,19 @@ Send me an email or reach out on social media!
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInput(e.target.value)
     setIsTyping(true)
-    // Stop typing animation after a short delay
     setTimeout(() => setIsTyping(false), 300)
   }
 
   return (
     <div className="min-h-screen bg-black p-2 sm:p-4 md:p-6 lg:p-8 font-mono pb-20 sm:pb-24 relative">
-      {/* Background Grid */}
       <div 
         className="fixed inset-0 opacity-5"
         style={{
-          backgroundImage: `
-            linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)
-          `,
+          backgroundImage: "linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)",
           backgroundSize: '50px 50px'
         }}
       />
-      {/* Boot Sequence */}
+      
       <AnimatePresence>
         {showBootSequence && (
           <TerminalBootSequence 
@@ -498,21 +376,15 @@ Send me an email or reach out on social media!
         )}
       </AnimatePresence>
 
-      {/* TV Noise Effect (rendered inside terminal frame below) */}
-
-      {/* Matrix Rain Effect */}
       <MatrixRain isVisible={showMatrix} />
 
-      {/* Sound Effects */}
       <TerminalSoundSimulator isTyping={isTyping} />
       <KeyboardSoundEffect isActive={isTyping} />
 
       <FloatingNavigation onNavigate={handleNavigate} />
 
-      {/* About Me Card - Shows on terminal ready */}
       {terminalReady && <AboutMeCard />}
 
-      {/* Quick Commands - Left Sidebar - Hidden on small mobile */}
       {terminalReady && (
         <motion.div
           className="fixed left-2 sm:left-4 top-1/2 transform -translate-y-1/2 z-30 hidden sm:block"
@@ -545,177 +417,160 @@ Send me an email or reach out on social media!
         </motion.div>
       )}
 
-
       {terminalReady && (
         <ScrollReveal direction="up" delay={0.2}>
-        <motion.div
-          className="max-w-4xl sm:max-w-5xl md:max-w-6xl mx-auto px-2 sm:px-4 relative z-10"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
-        >
-        {/* Terminal Window */}
-        <CRTEffect>
-          <TerminalWindowEffect>
-            <motion.div 
-              className="bg-black border-2 border-white/50 rounded-xl overflow-hidden shadow-[0_0_50px_rgba(255,255,255,0.2)] backdrop-blur-sm relative"
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
-            >
-              {/* Scan lines overlay */}
-              <TerminalScanLines intensity={0.015} />
-              
-              {/* Subtle Retro Scanlines */}
-              <div className="absolute inset-0 pointer-events-none opacity-10"
-                style={{
-                  background: `repeating-linear-gradient(
-                    0deg,
-                    rgba(255, 255, 255, 0.1) 0px,
-                    transparent 1px,
-                    transparent 2px,
-                    rgba(255, 255, 255, 0.1) 3px
-                  )`
-                }}
-              />
-
-              {/* TV Noise Effect rendered inside the terminal frame so the noise is clipped to the terminal */}
-              <TVNoise isVisible={showTVNoise} onComplete={() => setShowTVNoise(false)} />
-
-              {/* Terminal Shadow Inset */}
-              <div className="absolute inset-0 shadow-[inset_0_0_100px_rgba(255,255,255,0.02)] pointer-events-none" />
-          {/* Terminal Header */}
-          <motion.div 
-            className="bg-white/10 border-b border-white/30 px-3 sm:px-4 md:px-6 py-2 sm:py-3 md:py-4 flex justify-between items-center"
-            initial={{ y: -20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.3, duration: 0.5 }}
+          <motion.div
+            className="max-w-4xl sm:max-w-5xl md:max-w-6xl mx-auto px-2 sm:px-4 relative z-10"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
           >
-            <div className="flex items-center gap-2 sm:gap-3 md:gap-4">
-              <motion.div 
-                className="font-bold font-mono text-sm sm:text-base md:text-lg tracking-wide text-white"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.5 }}
-              >
-                <span className="hidden xs:inline">PORTFOLIO TERMINAL</span>
-                <span className="xs:hidden">TERMINAL</span>
-              </motion.div>
-              <motion.div
-                className="text-xs text-white/70 font-mono hidden sm:block"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.7 }}
-              >
-                v2.0.1 | bash 5.1.4
-              </motion.div>
-            </div>
-          </motion.div>
-
-          {/* Terminal Content */}
-          <div className="relative">
-            {/* Content Background Pattern */}
-            <div 
-              className="absolute inset-0 opacity-5"
-              style={{
-                backgroundImage: `radial-gradient(circle at 1px 1px, white 1px, transparent 0)`,
-                backgroundSize: '20px 20px'
-              }}
-            />
-            
-            <div className="flex flex-col p-2 sm:p-3 md:p-4 lg:p-6 h-[75vh] sm:h-[75vh] md:h-[70vh] lg:h-[75vh] overflow-y-auto custom-scrollbar relative z-10">
-            <AnimatePresence mode="wait">
-              {commands.map((cmd, index) => (
-                <motion.div
-                  key={cmd.id}
-                  // className="space-y-2 sm:space-y-3 p-2 sm:p-3 md:p-4 rounded-lg bg-white/5 border border-white/10 backdrop-blur-sm"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 20 }}
-                  transition={{ 
-                    duration: 0.4, 
-                    delay: index * 0.1,
-                    ease: [0.25, 0.1, 0.25, 1]
-                  }}
+            <CRTEffect>
+              <TerminalWindowEffect>
+                <motion.div 
+                  className="bg-black border-2 border-white/50 rounded-xl overflow-hidden shadow-[0_0_50px_rgba(255,255,255,0.2)] backdrop-blur-sm relative"
+                  initial={{ scale: 0.95, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
                 >
-                  {cmd.input && (
-                    <motion.div 
-                      className="flex items-center gap-2 sm:gap-3 text-white border-b border-white/10 pb-1 sm:pb-2"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ delay: 0.2 }}
-                    >
-                      <span className="text-white text-sm sm:text-base lg:text-lg">❯</span>
-                      <span className="font-mono text-xs sm:text-sm flex-1 min-w-0 break-all">{cmd.input}</span>
-                      <span className="text-gray-400 text-xs ml-auto whitespace-nowrap">{cmd.timestamp}</span>
-                    </motion.div>
-                  )}
+                  <TerminalScanLines intensity={0.015} />
+                  
+                  <div className="absolute inset-0 pointer-events-none opacity-10"
+                    style={{
+                      background: "repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.1) 0px, transparent 1px, transparent 2px, rgba(255, 255, 255, 0.1) 3px)"
+                    }}
+                  />
+
+                  <TVNoise isVisible={showTVNoise} onComplete={() => setShowTVNoise(false)} />
+
+                  <div className="absolute inset-0 shadow-[inset_0_0_100px_rgba(255,255,255,0.02)] pointer-events-none" />
+              
                   <motion.div 
-                    className="text-white whitespace-pre-wrap font-mono text-xs sm:text-sm leading-relaxed pl-4 sm:pl-6"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
+                    className="bg-white/10 border-b border-white/30 px-3 sm:px-4 md:px-6 py-2 sm:py-3 md:py-4 flex justify-between items-center"
+                    initial={{ y: -20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: 0.3, duration: 0.5 }}
                   >
-                    {cmd.output}
+                    <div className="flex items-center gap-2 sm:gap-3 md:gap-4">
+                      <motion.div 
+                        className="font-bold font-mono text-sm sm:text-base md:text-lg tracking-wide text-white"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.5 }}
+                      >
+                        <span className="hidden xs:inline">PORTFOLIO TERMINAL</span>
+                        <span className="xs:hidden">TERMINAL</span>
+                      </motion.div>
+                      <motion.div
+                        className="text-xs text-white/70 font-mono hidden sm:block"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.7 }}
+                      >
+                        v2.0.1 | bash 5.1.4
+                      </motion.div>
+                    </div>
+                  </motion.div>
+
+                  <div className="relative">
+                    <div 
+                      className="absolute inset-0 opacity-5"
+                      style={{
+                        backgroundImage: "radial-gradient(circle at 1px 1px, white 1px, transparent 0)",
+                        backgroundSize: '20px 20px'
+                      }}
+                    />
+                    
+                    <div className="flex flex-col p-2 sm:p-3 md:p-4 lg:p-6 h-[75vh] sm:h-[75vh] md:h-[70vh] lg:h-[75vh] overflow-y-auto custom-scrollbar relative z-10">
+                      <AnimatePresence mode="wait">
+                        {commands.map((cmd, index) => (
+                          <motion.div
+                            key={cmd.id}
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: 20 }}
+                            transition={{ 
+                              duration: 0.4, 
+                              delay: index * 0.1,
+                              ease: [0.25, 0.1, 0.25, 1]
+                            }}
+                          >
+                            {cmd.input && (
+                              <motion.div 
+                                className="flex items-center gap-2 sm:gap-3 text-white border-b border-white/10 pb-1 sm:pb-2"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ delay: 0.2 }}
+                              >
+                                <span className="text-white text-sm sm:text-base lg:text-lg">❯</span>
+                                <span className="font-mono text-xs sm:text-sm flex-1 min-w-0 break-all">{cmd.input}</span>
+                                <span className="text-gray-400 text-xs ml-auto whitespace-nowrap">{cmd.timestamp}</span>
+                              </motion.div>
+                            )}
+                            <motion.div 
+                              className="text-white whitespace-pre-wrap font-mono text-xs sm:text-sm leading-relaxed pl-4 sm:pl-6"
+                              initial={{ opacity: 0, y: 10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ delay: 0.3, duration: 0.5 }}
+                            >
+                              {cmd.output}
+                            </motion.div>
+                          </motion.div>
+                        ))}
+                      </AnimatePresence>
+                      <div ref={terminalEndRef} />
+                    </div>
+                  </div>
+
+                  <motion.div 
+                    className="border-t border-white/20 bg-gradient-to-r from-black/80 to-gray-900/80 px-3 sm:px-4 md:px-6 lg:px-8 py-3 sm:py-4 md:py-6 backdrop-blur-sm"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.8 }}
+                  >
+                    <div className="flex items-center gap-2 sm:gap-3 md:gap-4">
+                      <motion.div
+                        className="flex items-center gap-1 sm:gap-2 text-white"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 1 }}
+                      >
+                        <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-white rounded-full animate-pulse" />
+                        <span className="font-mono text-xs sm:text-sm text-gray-400 hidden xs:block">visitor@portfolio</span>
+                        <span className="text-gray-500 text-xs">:</span>
+                        <span className="text-blue-400 text-xs sm:text-sm">~</span>
+                        <span className="text-white text-sm sm:text-base lg:text-lg ml-1 sm:ml-2">❯</span>
+                      </motion.div>
+                      
+                      <motion.input
+                        type="text"
+                        value={input}
+                        onChange={handleInputChange}
+                        onKeyPress={handleKeyPress}
+                        placeholder="Enter command..."
+                        className="flex-1 bg-transparent outline-none text-white placeholder-gray-500 font-mono text-xs sm:text-sm border-b border-transparent focus:border-white/30 transition-all duration-300 py-1"
+                        autoFocus
+                        initial={{ opacity: 0, width: 0 }}
+                        animate={{ opacity: 1, width: "100%" }}
+                        transition={{ delay: 1.2, duration: 0.5 }}
+                      />
+                      
+                      <motion.div
+                        className="flex items-center gap-1"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 1.4 }}
+                      >
+                        <div className="w-0.5 sm:w-1 bg-white animate-pulse h-3 sm:h-4" />
+                      </motion.div>
+                    </div>
                   </motion.div>
                 </motion.div>
-              ))}
-            </AnimatePresence>
-            <div ref={terminalEndRef} />
-            </div>
-          </div>
-
-          {/* Terminal Input */}
-          <motion.div 
-            className="border-t border-white/20 bg-gradient-to-r from-black/80 to-gray-900/80 px-3 sm:px-4 md:px-6 lg:px-8 py-3 sm:py-4 md:py-6 backdrop-blur-sm"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.8 }}
-          >
-            <div className="flex items-center gap-2 sm:gap-3 md:gap-4">
-              <motion.div
-                className="flex items-center gap-1 sm:gap-2 text-white"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 1 }}
-              >
-                <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-white rounded-full animate-pulse" />
-                <span className="font-mono text-xs sm:text-sm text-gray-400 hidden xs:block">visitor@portfolio</span>
-                <span className="text-gray-500 text-xs">:</span>
-                <span className="text-blue-400 text-xs sm:text-sm">~</span>
-                <span className="text-white text-sm sm:text-base lg:text-lg ml-1 sm:ml-2">❯</span>
-              </motion.div>
-              
-              <motion.input
-                type="text"
-                value={input}
-                onChange={handleInputChange}
-                onKeyPress={handleKeyPress}
-                placeholder="Enter command..."
-                className="flex-1 bg-transparent outline-none text-white placeholder-gray-500 font-mono text-xs sm:text-sm border-b border-transparent focus:border-white/30 transition-all duration-300 py-1"
-                autoFocus
-                initial={{ opacity: 0, width: 0 }}
-                animate={{ opacity: 1, width: "100%" }}
-                transition={{ delay: 1.2, duration: 0.5 }}
-              />
-              
-              <motion.div
-                className="flex items-center gap-1"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 1.4 }}
-              >
-                <div className="w-0.5 sm:w-1 bg-white animate-pulse h-3 sm:h-4" />
-              </motion.div>
-            </div>
+              </TerminalWindowEffect>
+            </CRTEffect>
           </motion.div>
-            </motion.div>
-          </TerminalWindowEffect>
-        </CRTEffect>
-        </motion.div>
-      </ScrollReveal>
+        </ScrollReveal>
       )}
-
     </div>
   )
 }
