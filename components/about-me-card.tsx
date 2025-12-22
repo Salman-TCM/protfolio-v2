@@ -4,8 +4,8 @@ import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 
 export function AboutMeCard() {
-  const [isVisible, setIsVisible] = useState(true)
-  const [isMinimized, setIsMinimized] = useState(false)
+  const [isVisible, setIsVisible] = useState(false)
+  const [isMinimized, setIsMinimized] = useState(true)
   const [position, setPosition] = useState({ x: 0, y: 0 })
   const [glitchActive, setGlitchActive] = useState(false)
 

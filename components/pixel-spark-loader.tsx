@@ -14,7 +14,7 @@ interface Pixel {
 }
 
 interface Spark {
-  id: number
+  id: string
   x: number
   y: number
   vx: number
@@ -85,13 +85,14 @@ export function PixelSparkLoader({
   const createSparks = (pixelX: number, pixelY: number) => {
     const newSparks: Spark[] = []
     const sparkCount = 3 + Math.floor(Math.random() * 5)
+    const timestamp = Date.now()
     
     for (let i = 0; i < sparkCount; i++) {
       const angle = (Math.PI * 2 * i) / sparkCount + Math.random() * 0.5
       const velocity = 2 + Math.random() * 4
       
       newSparks.push({
-        id: Date.now() + i,
+        id: `${timestamp}-${i}-${Math.random().toString(36).substr(2, 9)}`,
         x: pixelX,
         y: pixelY,
         vx: Math.cos(angle) * velocity,
